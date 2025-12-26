@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Custos de Receitas</title>
+
+  <!-- Conectando a base de dados -->
+  <script src="ingredientes.js"></script>
+</head>
+
+<body>
+
+  <h1>Montagem da Receita</h1>
+
+  <!-- Campo de busca (lupa) -->
+  <input 
+    type="text" 
+    id="busca" 
+    placeholder="🔍 Pesquisar ingrediente..."
+    onkeyup="filtrar()"
+  >
+
+  <!-- Lista de ingredientes -->
+  <ul id="lista"></ul>
+
+  <script>
+    function filtrar() {
+      let texto = document.getElementById("busca").value.toLowerCase();
+      let lista = document.getElementById("lista");
+
+      lista.innerHTML = "";
+
+      ingredientes
+        .filter(i => i.nome.toLowerCase().includes(texto))
+        .forEach(i => {
+          let li = document.createElement("li");
+          li.innerText = i.nome + " (" + i.unidade + ")";
+          lista.appendChild(li);
+        });
+    }
+  </script>
+
+</body>
+</html>
