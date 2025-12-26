@@ -55,10 +55,13 @@ function render(){
         onchange="setPreco(${i}, this.value)">
       </td>
 
-      <td>R$ ${item.custo.toFixed(2)}</td>
-
       <td>
-        <button onclick="removerItem(${i})">❌</button>
+        R$ ${item.custo.toFixed(2)}
+        <br><br>
+        <button onclick="removerItem(${i})"
+          style="background:#d9534f;color:#fff;border:none;padding:4px 8px;">
+          Remover
+        </button>
       </td>
     `;
 
