@@ -2,71 +2,135 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Sistema de Custeio</title>
+  <title>Sistema de Custeio de Receitas</title>
 
+  <!-- Base de ingredientes -->
   <script src="ingredientes.js"></script>
+
+  <!-- Lógica do sistema -->
   <script src="app.js" defer></script>
 
   <style>
-    body { font-family: Arial; margin: 20px; }
-    input { padding: 5px; width: 120px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #aaa; padding: 6px; text-align: center; }
-    th { background: #eee; }
-    ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; }
-    li { padding: 6px; cursor: pointer; }
-    li:hover { background: #f0f0f0; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1, h2 {
+      margin-top: 20px;
+    }
+
+    input, select {
+      padding: 5px;
+      margin: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #999;
+      padding: 6px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-height: 220px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    li {
+      padding: 6px;
+      cursor: pointer;
+    }
+
+    li:hover {
+      background-color: #f0f0f0;
+    }
   </style>
 </head>
 
 <body>
 
-<h1>Sistema de Custeio de Receitas</h1>
+  <h1>Sistema de Custeio de Receitas</h1>
 
-<input
-  type="text"
-  placeholder="🔍 Buscar ingrediente"
-  onkeyup="filtrar(this.value)"
->
+  <!-- BUSCA -->
+  <label><strong>Buscar item:</strong></label><br>
+  <input
+    type="text"
+    placeholder="🔍 Digite o nome do item"
+    onkeyup="filtrar(this.value)"
+  >
 
-<ul id="lista"></ul>
+  <ul id="lista"></ul>
 
-<h2>Itens da Receita</h2>
+  <!-- TABELA -->
+  <h2>Itens da Receita</h2>
 
-<table>
-  <thead>
-    <tr>
-      <th>Item</th>
-      <th>Quantidade usada</th>
-      <th>Custo unitário</th>
-      <th>Custo (R$)</th>
-    </tr>
-  </thead>
-  <tbody id="receita"></tbody>
-</table>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantidade usada</th>
+        <th>Tipo de compra</th>
+        <th>Preço de compra (R$)</th>
+        <th>Custo (R$)</th>
+      </tr>
+    </thead>
+    <tbody id="receita"></tbody>
+  </table>
 
-<p><strong>Custo total:</strong> R$ <span id="custoTotal">0.00</span></p>
+  <!-- TOTAIS -->
+  <p>
+    <strong>Custo total da receita:</strong>
+    R$ <span id="custoTotal">0.00</span>
+  </p>
 
-<h3>Margem</h3>
-<input type="number" placeholder="Margem %" onchange="atualizarMargem(this.value)">
+  <!-- MARGEM -->
+  <h2>Margem de contribuição</h2>
 
-<p><strong>Preço de venda:</strong> R$ <span id="precoVenda">0.00</span></p>
+  <input
+    type="number"
+    placeholder="Digite a margem (%)"
+    onchange="atualizarMargem(this.value)"
+  >
 
-<script>
-function filtrar(texto) {
-  let lista = document.getElementById("lista");
-  lista.innerHTML = "";
+  <p>
+    <strong>Preço de venda sugerido:</strong>
+    R$ <span id="precoVenda">0.00</span>
+  </p>
 
-  ingredientes
-    .filter(i => i.nome.toLowerCase().includes(texto.toLowerCase()))
-    .forEach(i => {
-      let li = document.createElement("li");
-      li.innerText = `${i.nome} (${i.tipo})`;
-      li.onclick = () => adicionarIngrediente(i);
-      lista.appendChild(li);
-    });
-}
-</script>
+  <!-- SCRIPT DE FILTRO -->
+  <script>
+    function filtrar(texto) {
+      let lista = document.getElementById("lista");
+      lista.innerHTML = "";
+
+      if (!texto) return;
+
+      ingredientes
+        .filter(item =>
+          item.nome.toLowerCase().includes(texto.toLowerCase())
+        )
+        .forEach(item => {
+          let li = document.createElement("li");
+          li.textContent = item.nome + " (" + item.tipo + ")";
+          li.onclick = () => adicionarIngrediente(item);
+          lista.appendChild(li);
+        });
+    }
+  </script>
 
 </body>
 </html>
