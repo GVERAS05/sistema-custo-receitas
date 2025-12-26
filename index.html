@@ -4,24 +4,93 @@
   <meta charset="UTF-8">
   <title>Sistema de Custos de Receitas</title>
 
-  <!-- Conectando a base de dados -->
+  <!-- Base de dados -->
   <script src="ingredientes.js"></script>
+
+  <!-- Lógica do sistema -->
+  <script src="app.js" defer></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    input {
+      margin: 4px;
+      padding: 4px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid #999;
+      padding: 6px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+    }
+
+    li {
+      padding: 6px;
+      cursor: pointer;
+    }
+
+    li:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
 </head>
 
 <body>
 
   <h1>Montagem da Receita</h1>
 
-  <!-- Campo de busca (lupa) -->
-  <input 
-    type="text" 
-    id="busca" 
+  <!-- Busca -->
+  <input
+    type="text"
+    id="busca"
     placeholder="🔍 Pesquisar ingrediente..."
     onkeyup="filtrar()"
   >
 
   <!-- Lista de ingredientes -->
   <ul id="lista"></ul>
+
+  <h2>Ingredientes da Receita</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Ingrediente</th>
+        <th>Qtd usada</th>
+        <th>Unidade</th>
+        <th>Qtd embalagem</th>
+        <th>Preço embalagem (R$)</th>
+        <th>Custo na receita (R$)</th>
+      </tr>
+    </thead>
+    <tbody id="receita"></tbody>
+  </table>
+
+  <p>
+    <strong>Custo total da receita:</strong>
+    R$ <span id="total">0.00</span>
+  </p>
 
   <script>
     function filtrar() {
@@ -35,6 +104,7 @@
         .forEach(i => {
           let li = document.createElement("li");
           li.innerText = i.nome + " (" + i.unidade + ")";
+          li.onclick = () => adicionarIngrediente(i);
           lista.appendChild(li);
         });
     }
