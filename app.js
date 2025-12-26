@@ -1,12 +1,21 @@
 let receita = [];
 let margem = 0;
 
+function converterParaBase(valor, unidade) {
+  if (unidade === "kg" || unidade === "L") {
+    return valor * 1000;
+  }
+  return valor; // g ou ml
+}
+
 function adicionarIngrediente(ingrediente) {
   let item = {
     nome: ingrediente.nome,
     unidade: ingrediente.unidade,
-    quantidadeUsada: 0,
-    quantidadeEmbalagem: 0,
+    qtdUsada: 0,
+    unUsada: ingrediente.unidade,
+    qtdEmbalagem: 0,
+    unEmbalagem: ingrediente.unidade,
     precoEmbalagem: 0,
     custo: 0
   };
@@ -17,13 +26,16 @@ function adicionarIngrediente(ingrediente) {
 
 function calcularCusto(item) {
   if (
-    item.quantidadeUsada > 0 &&
-    item.quantidadeEmbalagem > 0 &&
+    item.qtdUsada > 0 &&
+    item.qtdEmbalagem > 0 &&
     item.precoEmbalagem > 0
   ) {
+    let usadaBase = converterParaBase(item.qtdUsada, item.unUsada);
+    let embalagemBase = converterParaBase(item.qtdEmbalagem, item.unEmbalagem);
+
     item.custo =
-      (item.precoEmbalagem / item.quantidadeEmbalagem) *
-      item.quantidadeUsada;
+      (item.precoEmbalagem / embalagemBase) *
+      usadaBase;
   } else {
     item.custo = 0;
   }
@@ -46,14 +58,24 @@ function atualizar() {
 
       <td>
         <input type="number"
-          onchange="receita[${index}].quantidadeUsada = this.value; atualizar()">
+          onchange="receita[${index}].qtdUsada = this.value; atualizar()">
+        <select onchange="receita[${index}].unUsada = this.value; atualizar()">
+          <option value="g">g</option>
+          <option value="kg">kg</option>
+          <option value="ml">ml</option>
+          <option value="L">L</option>
+        </select>
       </td>
-
-      <td>${item.unidade}</td>
 
       <td>
         <input type="number"
-          onchange="receita[${index}].quantidadeEmbalagem = this.value; atualizar()">
+          onchange="receita[${index}].qtdEmbalagem = this.value; atualizar()">
+        <select onchange="receita[${index}].unEmbalagem = this.value; atualizar()">
+          <option value="g">g</option>
+          <option value="kg">kg</option>
+          <option value="ml">ml</option>
+          <option value="L">L</option>
+        </select>
       </td>
 
       <td>
