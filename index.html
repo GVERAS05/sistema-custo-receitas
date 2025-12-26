@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <title>Sistema de Custeio</title>
+
 <script src="ingredientes.js"></script>
 <script src="app.js" defer></script>
 
 <style>
 body { font-family: Arial; padding: 20px; }
-table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+input, select { padding: 4px; }
+table { border-collapse: collapse; width: 100%; margin-top: 10px; }
 th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-input, select { width: 100%; }
-ul { border: 1px solid #ccc; max-height: 200px; overflow-y: auto; padding: 0; }
+ul { border: 1px solid #ccc; max-height: 150px; overflow-y: auto; padding: 0; }
 li { list-style: none; padding: 6px; cursor: pointer; }
 li:hover { background: #eee; }
 </style>
@@ -19,12 +20,11 @@ li:hover { background: #eee; }
 
 <body>
 
-<h1>Sistema de Custeio</h1>
-
-<input type="text" placeholder="Pesquisar item"
-onkeyup="buscar(this.value)">
-
+<h2>Buscar item</h2>
+<input type="text" onkeyup="buscar(this.value)">
 <ul id="lista"></ul>
+
+<h2>Receita</h2>
 
 <table>
 <thead>
@@ -47,13 +47,15 @@ function buscar(txt){
   const ul=document.getElementById("lista");
   ul.innerHTML="";
   if(!txt) return;
-  ingredientes.filter(i=>i.nome.toLowerCase().includes(txt.toLowerCase()))
-  .forEach(i=>{
-    const li=document.createElement("li");
-    li.textContent=i.nome;
-    li.onclick=()=>adicionarItem(i);
-    ul.appendChild(li);
-  });
+
+  ingredientes
+    .filter(i=>i.nome.toLowerCase().includes(txt.toLowerCase()))
+    .forEach(i=>{
+      const li=document.createElement("li");
+      li.textContent=i.nome;
+      li.onclick=()=>adicionarItem(i.nome);
+      ul.appendChild(li);
+    });
 }
 </script>
 
