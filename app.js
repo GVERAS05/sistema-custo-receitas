@@ -1,11 +1,11 @@
-let itens = [];
+let receita = [];
 
-function adicionarItem(item){
-  if(itens.find(i=>i.nome===item.nome)) return;
+function adicionarItem(nome){
+  if(receita.find(i => i.nome === nome)) return;
 
-  itens.push({
-    nome: item.nome,
-    qtd: 0,
+  receita.push({
+    nome,
+    quantidade: 0,
     unidadeUso: "kg",
     tipoCompra: "kg",
     preco: 0,
@@ -16,57 +16,64 @@ function adicionarItem(item){
 }
 
 function render(){
-  const tb=document.getElementById("tabela");
-  tb.innerHTML="";
+  const tbody = document.getElementById("tabela");
+  tbody.innerHTML = "";
 
-  itens.forEach((i,idx)=>{
-    const tr=document.createElement("tr");
+  receita.forEach((item, i) => {
+    const tr = document.createElement("tr");
 
-    tr.innerHTML=`
-    <td>${i.nome}</td>
+    tr.innerHTML = `
+      <td>${item.nome}</td>
 
-    <td>
-      <input type="number" step="any" onchange="setQtd(${idx},this.value)">
-    </td>
+      <td>
+        <input type="number" step="any" value="${item.quantidade}"
+        onchange="setQuantidade(${i}, this.value)">
+      </td>
 
-    <td>
-      <select onchange="setUnidade(${idx},this.value)">
-        <option>g</option>
-        <option>kg</option>
-        <option>ml</option>
-        <option>L</option>
-      </select>
-    </td>
+      <td>
+        <select onchange="setUnidade(${i}, this.value)">
+          ${opcao("g", item.unidadeUso)}
+          ${opcao("kg", item.unidadeUso)}
+          ${opcao("ml", item.unidadeUso)}
+          ${opcao("L", item.unidadeUso)}
+        </select>
+      </td>
 
-    <td>
-      <select onchange="setCompra(${idx},this.value)">
-        <option value="kg">kg</option>
-        <option value="L">L</option>
-        <option value="s25">Saca 25 kg</option>
-        <option value="s50">Saca 50 kg</option>
-        <option value="s100">Saca 100 kg</option>
-        <option value="un">Unidade</option>
-      </select>
-    </td>
+      <td>
+        <select onchange="setCompra(${i}, this.value)">
+          ${opcao("kg", item.tipoCompra, "kg")}
+          ${opcao("L", item.tipoCompra, "L")}
+          ${opcao("s25", item.tipoCompra, "Saca 25 kg")}
+          ${opcao("s50", item.tipoCompra, "Saca 50 kg")}
+          ${opcao("s100", item.tipoCompra, "Saca 100 kg")}
+          ${opcao("un", item.tipoCompra, "Unidade")}
+        </select>
+      </td>
 
-    <td>
-      <input type="number" step="any" onchange="setPreco(${idx},this.value)">
-    </td>
+      <td>
+        <input type="number" step="any" value="${item.preco}"
+        onchange="setPreco(${i}, this.value)">
+      </td>
 
-    <td>R$ ${i.custo.toFixed(2)}</td>
+      <td>R$ ${item.custo.toFixed(2)}</td>
     `;
-    tb.appendChild(tr);
+
+    tbody.appendChild(tr);
   });
 
   atualizarTotal();
 }
 
-function setQtd(i,v){ itens[i].qtd=parseFloat(v)||0; calcular(i); }
-function setUnidade(i,v){ itens[i].unidadeUso=v; calcular(i); }
-function setCompra(i,v){ itens[i].tipoCompra=v; calcular(i); }
-function setPreco(i,v){ itens[i].preco=parseFloat(v)||0; calcular(i); }
+function opcao(valor, atual, texto = valor){
+  return `<option value="${valor}" ${valor === atual ? "selected" : ""}>${texto}</option>`;
+}
 
-function converterParaBase(q,u){
+function setQuantidade(i,v){ receita[i].quantidade = parseFloat(v)||0; calcular(i); }
+function setUnidade(i,v){ receita[i].unidadeUso = v; calcular(i); }
+function setCompra(i,v){ receita[i].tipoCompra = v; calcular(i); }
+function setPreco(i,v){ receita[i].preco = parseFloat(v)||0; calcular(i); }
+
+function paraBase(q,u){
   if(u==="g") return q/1000;
   if(u==="kg") return q;
   if(u==="ml") return q/1000;
@@ -79,18 +86,18 @@ function fatorCompra(t){
   if(t==="s25") return 25;
   if(t==="s50") return 50;
   if(t==="s100") return 100;
-  if(t==="un") return 1;
+  return 1;
 }
 
 function calcular(i){
-  const it=itens[i];
-  const base=converterParaBase(it.qtd,it.unidadeUso);
-  const fator=fatorCompra(it.tipoCompra);
-  it.custo=(base/fator)*it.preco;
+  const it = receita[i];
+  const base = paraBase(it.quantidade, it.unidadeUso);
+  const fator = fatorCompra(it.tipoCompra);
+  it.custo = (base / fator) * it.preco;
   render();
 }
 
 function atualizarTotal(){
-  const total=itens.reduce((s,i)=>s+i.custo,0);
-  document.getElementById("total").innerText=total.toFixed(2);
+  const total = receita.reduce((s,i)=>s+i.custo,0);
+  document.getElementById("total").innerText = total.toFixed(2);
 }
