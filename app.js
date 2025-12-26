@@ -1,4 +1,5 @@
 let receita = [];
+let margem = 0;
 
 function adicionarIngrediente(ingrediente) {
   let item = {
@@ -11,7 +12,7 @@ function adicionarIngrediente(ingrediente) {
   };
 
   receita.push(item);
-  atualizarTabela();
+  atualizar();
 }
 
 function calcularCusto(item) {
@@ -28,15 +29,15 @@ function calcularCusto(item) {
   }
 }
 
-function atualizarTabela() {
+function atualizar() {
   let tbody = document.getElementById("receita");
   tbody.innerHTML = "";
 
-  let total = 0;
+  let custoTotal = 0;
 
   receita.forEach((item, index) => {
     calcularCusto(item);
-    total += item.custo;
+    custoTotal += item.custo;
 
     let tr = document.createElement("tr");
 
@@ -44,20 +45,20 @@ function atualizarTabela() {
       <td>${item.nome}</td>
 
       <td>
-        <input type="number" placeholder="Qtd usada"
-          onchange="receita[${index}].quantidadeUsada = this.value; atualizarTabela()">
+        <input type="number"
+          onchange="receita[${index}].quantidadeUsada = this.value; atualizar()">
       </td>
 
       <td>${item.unidade}</td>
 
       <td>
-        <input type="number" placeholder="Qtd embalagem"
-          onchange="receita[${index}].quantidadeEmbalagem = this.value; atualizarTabela()">
+        <input type="number"
+          onchange="receita[${index}].quantidadeEmbalagem = this.value; atualizar()">
       </td>
 
       <td>
-        <input type="number" placeholder="Preço embalagem (R$)"
-          onchange="receita[${index}].precoEmbalagem = this.value; atualizarTabela()">
+        <input type="number"
+          onchange="receita[${index}].precoEmbalagem = this.value; atualizar()">
       </td>
 
       <td>R$ ${item.custo.toFixed(2)}</td>
@@ -66,5 +67,19 @@ function atualizarTabela() {
     tbody.appendChild(tr);
   });
 
-  document.getElementById("total").innerText = total.toFixed(2);
+  document.getElementById("custoTotal").innerText =
+    custoTotal.toFixed(2);
+
+  let precoVenda = 0;
+  if (margem > 0 && margem < 100) {
+    precoVenda = custoTotal / (1 - margem / 100);
+  }
+
+  document.getElementById("precoVenda").innerText =
+    precoVenda.toFixed(2);
+}
+
+function atualizarMargem(valor) {
+  margem = parseFloat(valor) || 0;
+  atualizar();
 }
