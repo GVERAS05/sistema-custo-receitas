@@ -1,132 +1,96 @@
-let receita = [];
-let margem = 0;
+let itens = [];
 
-const conversoes = {
-  g: { kg: 0.001 },
-  kg: { g: 1000 },
-  ml: { l: 0.001 },
-  l: { ml: 1000 }
-};
+function adicionarItem(item){
+  if(itens.find(i=>i.nome===item.nome)) return;
 
-function adicionarIngrediente(item) {
-  if (receita.find(i => i.nome === item.nome)) return;
-
-  receita.push({
+  itens.push({
     nome: item.nome,
-    tipo: item.tipo,
-    quantidade: 0,
-    unidade: unidadePadrao(item.tipo),
-    precoCompra: 0,
+    qtd: 0,
+    unidadeUso: "kg",
+    tipoCompra: "kg",
+    preco: 0,
     custo: 0
   });
 
-  renderizarTabela();
+  render();
 }
 
-function unidadePadrao(tipo) {
-  if (tipo === "embalagem") return "un";
-  return "kg";
-}
+function render(){
+  const tb=document.getElementById("tabela");
+  tb.innerHTML="";
 
-function unidadesDisponiveis(tipo) {
-  if (tipo === "embalagem") return ["un"];
-  return ["g", "kg", "ml", "l"];
-}
+  itens.forEach((i,idx)=>{
+    const tr=document.createElement("tr");
 
-function renderizarTabela() {
-  const tbody = document.getElementById("receita");
-  tbody.innerHTML = "";
+    tr.innerHTML=`
+    <td>${i.nome}</td>
 
-  receita.forEach((item, index) => {
-    const tr = document.createElement("tr");
+    <td>
+      <input type="number" step="any" onchange="setQtd(${idx},this.value)">
+    </td>
 
-    // Nome
-    tr.innerHTML += `<td>${item.nome}</td>`;
+    <td>
+      <select onchange="setUnidade(${idx},this.value)">
+        <option>g</option>
+        <option>kg</option>
+        <option>ml</option>
+        <option>L</option>
+      </select>
+    </td>
 
-    // Quantidade
-    tr.innerHTML += `
-      <td>
-        <input type="number" min="0" step="any"
-          value="${item.quantidade}"
-          onchange="alterarQuantidade(${index}, this.value)">
-      </td>
+    <td>
+      <select onchange="setCompra(${idx},this.value)">
+        <option value="kg">kg</option>
+        <option value="L">L</option>
+        <option value="s25">Saca 25 kg</option>
+        <option value="s50">Saca 50 kg</option>
+        <option value="s100">Saca 100 kg</option>
+        <option value="un">Unidade</option>
+      </select>
+    </td>
+
+    <td>
+      <input type="number" step="any" onchange="setPreco(${idx},this.value)">
+    </td>
+
+    <td>R$ ${i.custo.toFixed(2)}</td>
     `;
-
-    // Unidade
-    tr.innerHTML += `
-      <td>
-        <select onchange="alterarUnidade(${index}, this.value)">
-          ${unidadesDisponiveis(item.tipo).map(u =>
-            `<option value="${u}" ${u === item.unidade ? "selected" : ""}>${u}</option>`
-          ).join("")}
-        </select>
-      </td>
-    `;
-
-    // Preço de compra
-    tr.innerHTML += `
-      <td>
-        <input type="number" min="0" step="any"
-          value="${item.precoCompra}"
-          onchange="alterarPreco(${index}, this.value)">
-      </td>
-    `;
-
-    // Custo
-    tr.innerHTML += `<td>R$ ${item.custo.toFixed(2)}</td>`;
-
-    tbody.appendChild(tr);
+    tb.appendChild(tr);
   });
 
-  atualizarTotais();
+  atualizarTotal();
 }
 
-function alterarQuantidade(index, valor) {
-  receita[index].quantidade = parseFloat(valor) || 0;
-  calcularCusto(index);
+function setQtd(i,v){ itens[i].qtd=parseFloat(v)||0; calcular(i); }
+function setUnidade(i,v){ itens[i].unidadeUso=v; calcular(i); }
+function setCompra(i,v){ itens[i].tipoCompra=v; calcular(i); }
+function setPreco(i,v){ itens[i].preco=parseFloat(v)||0; calcular(i); }
+
+function converterParaBase(q,u){
+  if(u==="g") return q/1000;
+  if(u==="kg") return q;
+  if(u==="ml") return q/1000;
+  if(u==="L") return q;
+  return q;
 }
 
-function alterarPreco(index, valor) {
-  receita[index].precoCompra = parseFloat(valor) || 0;
-  calcularCusto(index);
+function fatorCompra(t){
+  if(t==="kg"||t==="L") return 1;
+  if(t==="s25") return 25;
+  if(t==="s50") return 50;
+  if(t==="s100") return 100;
+  if(t==="un") return 1;
 }
 
-function alterarUnidade(index, novaUnidade) {
-  const item = receita[index];
-  const antiga = item.unidade;
-
-  if (antiga !== novaUnidade && conversoes[antiga]?.[novaUnidade]) {
-    item.quantidade *= conversoes[antiga][novaUnidade];
-  }
-
-  item.unidade = novaUnidade;
-  calcularCusto(index);
-  renderizarTabela();
+function calcular(i){
+  const it=itens[i];
+  const base=converterParaBase(it.qtd,it.unidadeUso);
+  const fator=fatorCompra(it.tipoCompra);
+  it.custo=(base/fator)*it.preco;
+  render();
 }
 
-function calcularCusto(index) {
-  const item = receita[index];
-
-  if (item.tipo === "embalagem") {
-    item.custo = item.quantidade * item.precoCompra;
-  } else {
-    item.custo = item.quantidade * item.precoCompra;
-  }
-
-  atualizarTotais();
-}
-
-function atualizarTotais() {
-  const total = receita.reduce((soma, i) => soma + i.custo, 0);
-  document.getElementById("custoTotal").innerText = total.toFixed(2);
-
-  if (margem > 0) {
-    const venda = total / (1 - margem / 100);
-    document.getElementById("precoVenda").innerText = venda.toFixed(2);
-  }
-}
-
-function atualizarMargem(valor) {
-  margem = parseFloat(valor) || 0;
-  atualizarTotais();
+function atualizarTotal(){
+  const total=itens.reduce((s,i)=>s+i.custo,0);
+  document.getElementById("total").innerText=total.toFixed(2);
 }
