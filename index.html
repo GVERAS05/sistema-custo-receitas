@@ -2,16 +2,16 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Sistema de Custeio de Receitas</title>
+  <title>Sistema de Custeio</title>
 
   <script src="ingredientes.js"></script>
   <script src="app.js" defer></script>
 
   <style>
     body { font-family: Arial; margin: 20px; }
-    input, select { margin: 3px; padding: 4px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-    th, td { border: 1px solid #999; padding: 6px; text-align: center; }
+    input { padding: 5px; width: 120px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #aaa; padding: 6px; text-align: center; }
     th { background: #eee; }
     ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; }
     li { padding: 6px; cursor: pointer; }
@@ -25,22 +25,20 @@
 
 <input
   type="text"
-  id="busca"
-  placeholder="🔍 Pesquisar ingrediente..."
-  onkeyup="filtrar()"
+  placeholder="🔍 Buscar ingrediente"
+  onkeyup="filtrar(this.value)"
 >
 
 <ul id="lista"></ul>
 
-<h2>Ingredientes da Receita</h2>
+<h2>Itens da Receita</h2>
 
 <table>
   <thead>
     <tr>
-      <th>Ingrediente</th>
+      <th>Item</th>
       <th>Quantidade usada</th>
-      <th>Embalagem</th>
-      <th>Preço embalagem (R$)</th>
+      <th>Custo unitário</th>
       <th>Custo (R$)</th>
     </tr>
   </thead>
@@ -49,26 +47,21 @@
 
 <p><strong>Custo total:</strong> R$ <span id="custoTotal">0.00</span></p>
 
-<h2>Margem</h2>
+<h3>Margem</h3>
+<input type="number" placeholder="Margem %" onchange="atualizarMargem(this.value)">
 
-<label>
-  Margem de contribuição (%):
-  <input type="number" onchange="atualizarMargem(this.value)">
-</label>
-
-<p><strong>Preço de venda sugerido:</strong> R$ <span id="precoVenda">0.00</span></p>
+<p><strong>Preço de venda:</strong> R$ <span id="precoVenda">0.00</span></p>
 
 <script>
-function filtrar() {
-  let texto = document.getElementById("busca").value.toLowerCase();
+function filtrar(texto) {
   let lista = document.getElementById("lista");
   lista.innerHTML = "";
 
   ingredientes
-    .filter(i => i.nome.toLowerCase().includes(texto))
+    .filter(i => i.nome.toLowerCase().includes(texto.toLowerCase()))
     .forEach(i => {
       let li = document.createElement("li");
-      li.innerText = i.nome;
+      li.innerText = `${i.nome} (${i.tipo})`;
       li.onclick = () => adicionarIngrediente(i);
       lista.appendChild(li);
     });
