@@ -2,14 +2,14 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Sistema de Custos de Receitas</title>
+  <title>Sistema de Custeio de Receitas</title>
 
   <script src="ingredientes.js"></script>
   <script src="app.js" defer></script>
 
   <style>
     body { font-family: Arial; margin: 20px; }
-    input { margin: 4px; padding: 4px; }
+    input, select { margin: 3px; padding: 4px; }
     table { border-collapse: collapse; width: 100%; margin-top: 10px; }
     th, td { border: 1px solid #999; padding: 6px; text-align: center; }
     th { background: #eee; }
@@ -38,9 +38,8 @@
   <thead>
     <tr>
       <th>Ingrediente</th>
-      <th>Qtd usada</th>
-      <th>Unidade</th>
-      <th>Qtd embalagem</th>
+      <th>Quantidade usada</th>
+      <th>Embalagem</th>
       <th>Preço embalagem (R$)</th>
       <th>Custo (R$)</th>
     </tr>
@@ -50,7 +49,7 @@
 
 <p><strong>Custo total:</strong> R$ <span id="custoTotal">0.00</span></p>
 
-<h2>Margem e Preço de Venda</h2>
+<h2>Margem</h2>
 
 <label>
   Margem de contribuição (%):
@@ -69,7 +68,7 @@ function filtrar() {
     .filter(i => i.nome.toLowerCase().includes(texto))
     .forEach(i => {
       let li = document.createElement("li");
-      li.innerText = i.nome + " (" + i.unidade + ")";
+      li.innerText = i.nome;
       li.onclick = () => adicionarIngrediente(i);
       lista.appendChild(li);
     });
