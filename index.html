@@ -26,44 +26,22 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 35px;
   flex-wrap: wrap;
-  margin-bottom: 25px;
 }
 
 header h1 {
-  font-size: 36px;
+  font-size: 42px;
   color: #1E88E5;
   letter-spacing: 0.5px;
-  margin: 0;
+  flex: 1 1 100%;
+  margin-bottom: 20px;
 }
 
-/* ===== Tabs ===== */
-.tabs {
-  display: flex;
-  gap: 15px;
-  margin-top: 15px;
-}
-
-.tab {
-  padding: 10px 20px;
-  border-radius: 20px;
-  background: #FCFCFC;
-  cursor: pointer;
-  font-weight: 500;
-  border: 2px solid #E0E0E0;
-  transition: all 0.3s;
-}
-
-.tab.active {
-  background: #1E88E5;
-  color: white;
-  border-color: #1E88E5;
-}
-
-/* ===== Search ===== */
 header .search-container {
   position: relative;
   width: 300px;
+  flex: 1 1 auto;
 }
 
 header .search-container input {
@@ -92,7 +70,7 @@ header .search-container img {
   opacity: 0.7;
 }
 
-/* ===== Dropdown lista ===== */
+/* ===== Lista dropdown ===== */
 #listaItens {
   border: 2px solid #E0E0E0;
   border-radius: 25px;
@@ -101,7 +79,6 @@ header .search-container img {
   background: #FCFCFC;
   padding: 0;
   margin: 0 0 30px 0;
-  position: relative;
   z-index: 10;
 }
 
@@ -215,30 +192,30 @@ header .search-container img {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* ===== Receitas ===== */
-#novaReceitaContainer {
-  margin: 25px 0;
+/* ===== Receita ===== */
+.receita-container {
   display: flex;
-  gap: 15px;
+  gap: 10px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
-  align-items: center;
 }
 
-#nomeReceita {
-  padding: 12px 18px;
-  border-radius: 25px;
+.receita-container input[type=text] {
+  flex: 1 1 200px;
+  padding: 12px;
+  border-radius: 20px;
   border: 2px solid #E0E0E0;
   font-size: 16px;
-  width: 300px;
+  transition: all 0.3s;
 }
 
-#nomeReceita:focus {
+.receita-container input[type=text]:focus {
   border-color: #1E88E5;
   box-shadow: 0 0 12px rgba(30,136,229,0.25);
   outline: none;
 }
 
-#btnSalvarReceita {
+.receita-container button {
   padding: 12px 20px;
   border-radius: 20px;
   border: none;
@@ -246,33 +223,57 @@ header .search-container img {
   color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 
-#btnSalvarReceita:hover {
+.receita-container button:hover {
   background: #388E3C;
+  transform: scale(1.03);
 }
 
-/* ===== Lista de receitas salvas ===== */
-#listaReceitas {
-  margin-top: 25px;
+/* ===== Aba de receitas salvas ===== */
+#receitasSalvas {
+  margin-top: 40px;
+  padding: 20px;
+  background: #FCFCFC;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+#receitasSalvas h2 {
+  margin-top: 0;
+  color: #1E88E5;
+}
+
+#receitasSalvas ul {
+  list-style: none;
   padding: 0;
 }
 
-#listaReceitas li {
-  list-style: none;
-  padding: 12px 18px;
-  background: #FCFCFC;
-  border-radius: 20px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  border: 2px solid #E0E0E0;
-  transition: all 0.3s;
+#receitasSalvas li {
+  padding: 10px;
+  border-bottom: 1px solid #BDBDBD;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-#listaReceitas li:hover {
-  background: #1E88E5;
+#receitasSalvas li:last-child {
+  border-bottom: none;
+}
+
+#receitasSalvas button {
+  background: #FB8C00;
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: none;
   color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#receitasSalvas button:hover {
+  background: #F57C00;
 }
 
 /* ===== Animações ===== */
@@ -309,29 +310,26 @@ header .search-container img {
 </div>
 </header>
 
-<div class="tabs">
-  <div class="tab active" onclick="mostrarAba('ingredientes')">Ingredientes</div>
-  <div class="tab" onclick="mostrarAba('receitas')">Receitas Salvas</div>
+<!-- Nome da receita e salvar -->
+<div class="receita-container">
+  <input type="text" id="nomeReceita" placeholder="Nome da receita...">
+  <button onclick="salvarReceita()">Salvar Receita</button>
 </div>
 
-<!-- Ingredientes -->
-<div id="abaIngredientes">
-  <ul id="listaItens"></ul>
-  <div class="cards-grid" id="cardsContainer"></div>
-  <p class="total">Custo total: R$ <span id="total">0.00</span></p>
-</div>
+<ul id="listaItens"></ul>
+<div class="cards-grid" id="cardsContainer"></div>
 
-<!-- Receitas -->
-<div id="abaReceitas" style="display:none;">
-  <div id="novaReceitaContainer">
-    <input type="text" id="nomeReceita" placeholder="Nome da Receita">
-    <button id="btnSalvarReceita">Salvar Receita</button>
-  </div>
-  <ul id="listaReceitas"></ul>
+<p class="total">Custo total: R$ <span id="total">0.00</span></p>
+
+<!-- Receitas salvas -->
+<div id="receitasSalvas">
+<h2>Receitas Salvas</h2>
+<ul id="listaReceitas"></ul>
+</div>
 </div>
 
 <script>
-// Lista completa de ingredientes
+// ===== Ingredientes e unidades =====
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
@@ -362,27 +360,22 @@ const unidades = [
   { label: "Mililitro (ml)", value: "ml" }
 ];
 
+// ===== Elementos =====
 const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
+const listaReceitas = document.getElementById("listaReceitas");
 let itensAdicionados = {};
 
-// Função de abas
-function mostrarAba(aba){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(aba==='ingredientes'){
-    document.querySelector('.tab:nth-child(1)').classList.add('active');
-    document.getElementById('abaIngredientes').style.display='block';
-    document.getElementById('abaReceitas').style.display='none';
-  }else{
-    document.querySelector('.tab:nth-child(2)').classList.add('active');
-    document.getElementById('abaIngredientes').style.display='none';
-    document.getElementById('abaReceitas').style.display='block';
-  }
+// ===== Inicialização =====
+function init(){
+  mostrarLista(ingredientes);
+  mostrarReceitas();
 }
+window.addEventListener("load", init);
 
-// Mostrar lista
+// ===== Lista de ingredientes =====
 function mostrarLista(itens){
-  listaUL.innerHTML="";
+  listaUL.innerHTML = "";
   itens.forEach(item=>{
     if(itensAdicionados[item]) return;
     const li = document.createElement("li");
@@ -392,15 +385,12 @@ function mostrarLista(itens){
   });
 }
 
-mostrarLista(ingredientes);
-
-// Filtrar lista
 function filtrarLista(){
   const txt = document.getElementById("busca").value.toLowerCase();
   mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
 }
 
-// Adicionar item
+// ===== Adicionar item =====
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome]=true;
@@ -409,13 +399,13 @@ function adicionarItem(nome){
   card.className="card-item";
   card.dataset.nome=nome;
 
-  // Recupera custo do localStorage
-  const custoSalvo = parseFloat(localStorage.getItem(`custo_${nome}`)) || 0;
+  // Recupera preço unitário salvo no localStorage
+  let precoUnitario = localStorage.getItem(`preco_${nome}`) || "";
 
   card.innerHTML=`
     <div class="card-header">${nome}</div>
     <div class="input-group">
-      <input type="number" placeholder="Custo" step="0.01" value="${custoSalvo}" oninput="calcular(); salvarCusto('${nome}', this.value)">
+      <input type="number" placeholder="Custo Unitário" step="0.01" value="${precoUnitario}" oninput="atualizarPreco('${nome}', this.value)">
       <input type="number" placeholder="Qtd" step="0.001" oninput="calcular()">
       <select onchange="calcular()">
         ${unidades.map(u=>`<option value="${u.value}">${u.label}</option>`).join("")}
@@ -430,7 +420,13 @@ function adicionarItem(nome){
   calcular();
 }
 
-// Calcular custo total
+// ===== Atualizar preço unitário =====
+function atualizarPreco(nome, valor){
+  localStorage.setItem(`preco_${nome}`, valor);
+  calcular();
+}
+
+// ===== Calcular total =====
 function calcular(){
   let total=0;
   document.querySelectorAll(".card-item").forEach(card=>{
@@ -444,7 +440,7 @@ function calcular(){
   document.getElementById("total").textContent=total.toFixed(2);
 }
 
-// Remover item
+// ===== Remover item =====
 function removerItem(botao){
   const card=botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
@@ -453,42 +449,54 @@ function removerItem(botao){
   mostrarLista(ingredientes);
 }
 
-// Salvar custo unitário
-function salvarCusto(nome, valor){
-  localStorage.setItem(`custo_${nome}`, valor);
-}
-
-// Receitas
-const btnSalvar = document.getElementById("btnSalvarReceita");
-const listaReceitas = document.getElementById("listaReceitas");
-
-btnSalvar.onclick = ()=>{
+// ===== Receitas =====
+function salvarReceita(){
   const nome = document.getElementById("nomeReceita").value.trim();
-  if(!nome){
-    alert("Digite o nome da receita!");
-    return;
-  }
-
-  // Salvar a receita com os itens e custos
-  const receita = [];
+  if(!nome) return alert("Digite um nome para a receita.");
+  let itens = [];
   document.querySelectorAll(".card-item").forEach(card=>{
     const nomeItem = card.dataset.nome;
-    const inputs = card.querySelectorAll("input[type=number]");
-    const qtd = parseFloat(inputs[1].value)||0;
-    const custo = parseFloat(inputs[0].value)||0;
+    const custo = parseFloat(card.querySelector("input[type=number]").value) || 0;
+    const qtd = parseFloat(card.querySelectorAll("input[type=number]")[1].value) || 0;
     const unidade = card.querySelector("select").value;
-    receita.push({nome: nomeItem, qtd, custo, unidade});
+    itens.push({nome: nomeItem, custo, qtd, unidade});
   });
-
-  localStorage.setItem(`receita_${nome}`, JSON.stringify(receita));
-  atualizarListaReceitas();
+  let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
+  receitas.push({nome, itens});
+  localStorage.setItem("receitas", JSON.stringify(receitas));
   document.getElementById("nomeReceita").value="";
+  mostrarReceitas();
   alert("Receita salva com sucesso!");
-};
+}
 
-// Atualizar lista de receitas
-function atualizarListaReceitas(){
+function mostrarReceitas(){
   listaReceitas.innerHTML="";
-  for(let i=0; i<localStorage.length; i++){
-    const chave = localStorage.key(i);
-    if(chave.startsWith("receita_
+  let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
+  receitas.forEach((r,i)=>{
+    const li = document.createElement("li");
+    li.innerHTML=`${r.nome} <button onclick="carregarReceita(${i})">Abrir</button>`;
+    listaReceitas.appendChild(li);
+  });
+}
+
+function carregarReceita(index){
+  // Limpa os itens atuais
+  cardsContainer.innerHTML="";
+  itensAdicionados={};
+  let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
+  let r = receitas[index];
+  r.itens.forEach(item=>{
+    adicionarItem(item.nome);
+    let card = Array.from(cardsContainer.children).find(c=>c.dataset.nome===item.nome);
+    if(card){
+      card.querySelector("input[type=number]").value = item.custo;
+      card.querySelectorAll("input[type=number]")[1].value = item.qtd;
+      card.querySelector("select").value = item.unidade;
+    }
+  });
+  calcular();
+}
+
+</script>
+</body>
+</html>
