@@ -4,21 +4,28 @@
 <meta charset="UTF-8">
 <title>Calculadora de Custos da Receita</title>
 <style>
-body { font-family: Arial; padding: 20px; }
-input, select, button { padding: 4px; margin: 2px; }
-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-#listaItens { border: 1px solid #ccc; max-height: 250px; overflow-y: auto; padding: 0; margin-top: 5px; }
-#listaItens li { list-style: none; padding: 6px; cursor: pointer; }
-#listaItens li:hover { background: #eee; }
-button { cursor: pointer; }
+body { font-family: Arial; padding: 20px; background: #f7f7f7; }
+h2 { color: #333; }
+
+input, select, button { padding: 6px; margin: 2px; font-size: 14px; }
+table { border-collapse: collapse; width: 100%; margin-top: 10px; background: #fff; box-shadow: 0 0 5px rgba(0,0,0,0.1);}
+th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+th { background: #eee; }
+#tabelaItens tr:nth-child(even) { background: #f9f9f9; }
+#listaItens { border: 1px solid #ccc; max-height: 250px; overflow-y: auto; padding: 0; margin-top: 5px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+#listaItens li { list-style: none; padding: 8px; cursor: pointer; }
+#listaItens li:hover { background: #dfefff; }
+
+button { cursor: pointer; border: none; background: #f44336; color: #fff; border-radius: 4px; }
+button:hover { background: #d32f2f; }
+
 .total { font-weight: bold; font-size: 18px; margin-top: 10px; }
 
-/* Container do input com lupa */
 .input-lupa {
   position: relative;
   display: inline-block;
   width: 100%;
+  margin-bottom: 5px;
 }
 
 .input-lupa img {
@@ -28,17 +35,31 @@ button { cursor: pointer; }
   transform: translateY(-50%);
   width: 18px;
   height: 18px;
-  pointer-events: none; /* Não bloqueia digitação */
+  pointer-events: none;
 }
 
 .input-lupa input {
   width: 100%;
-  padding-left: 30px; /* espaço para a lupa */
+  padding-left: 30px;
   box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+@media (max-width: 600px) {
+  table, thead, tbody, th, td, tr { display: block; }
+  th { text-align: left; background: #eee; }
+  td { text-align: right; padding-left: 50%; position: relative; }
+  td::before { position: absolute; left: 10px; width: 45%; white-space: nowrap; font-weight: bold; }
+  td:nth-of-type(1)::before { content: "Item"; }
+  td:nth-of-type(2)::before { content: "Custo por unidade (R$)"; }
+  td:nth-of-type(3)::before { content: "Quantidade usada"; }
+  td:nth-of-type(4)::before { content: "Unidade"; }
+  td:nth-of-type(5)::before { content: "Custo do item (R$)"; }
+  td:nth-of-type(6)::before { content: "Remover"; }
 }
 </style>
 </head>
-
 <body>
 
 <h2>Buscar item (lupa)</h2>
@@ -66,7 +87,7 @@ button { cursor: pointer; }
 <p class="total">Custo total da receita: R$ <span id="total">0.00</span></p>
 
 <script>
-// ===== BASE COMPLETA DE INGREDIENTES =====
+// ===== Base de ingredientes =====
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
@@ -89,7 +110,7 @@ const ingredientes = [
 "Açúcar"
 ].sort();
 
-// ===== UNIDADES NA ORDEM CORRETA =====
+// ===== Unidades =====
 const unidades = [
   { label: "Unidade", value: "un" },
   { label: "Quilo (kg)", value: "kg" },
@@ -98,7 +119,7 @@ const unidades = [
   { label: "Mililitro (ml)", value: "ml" }
 ];
 
-// ===== POPULAR LISTA =====
+// ===== Funções =====
 const listaUL = document.getElementById("listaItens");
 const tabelaItens = document.getElementById("tabelaItens");
 let itensAdicionados = {};
@@ -106,24 +127,20 @@ let itensAdicionados = {};
 function mostrarLista(itens) {
   listaUL.innerHTML = "";
   itens.forEach(item => {
-    if(itensAdicionados[item]) return; // não mostrar já adicionados
+    if(itensAdicionados[item]) return;
     const li = document.createElement("li");
     li.textContent = item;
     li.onclick = () => adicionarItem(item);
     listaUL.appendChild(li);
   });
 }
-
-// Mostrar todos os itens inicialmente
 mostrarLista(ingredientes);
 
-// ===== FILTRAR LISTA =====
 function filtrarLista() {
   const txt = document.getElementById("busca").value.toLowerCase();
   mostrarLista(ingredientes.filter(i => i.toLowerCase().includes(txt)));
 }
 
-// ===== ADICIONAR ITEM =====
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome] = true;
@@ -143,15 +160,11 @@ function adicionarItem(nome){
     <td class="custo">0.00</td>
     <td><button onclick="removerItem(this)">❌</button></td>
   `;
-
   tabelaItens.appendChild(tr);
-
-  // Atualizar lista e limpar busca
   document.getElementById("busca").value = "";
   mostrarLista(ingredientes);
 }
 
-// ===== CALCULAR =====
 function calcular(){
   let total = 0;
   document.querySelectorAll("#tabelaItens tr").forEach(tr => {
@@ -164,7 +177,6 @@ function calcular(){
   document.getElementById("total").textContent = total.toFixed(2);
 }
 
-// ===== REMOVER ITEM =====
 function removerItem(botao){
   const tr = botao.closest("tr");
   delete itensAdicionados[tr.dataset.nome];
