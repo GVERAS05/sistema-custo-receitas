@@ -14,26 +14,27 @@ th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
 button { cursor: pointer; }
 .total { font-weight: bold; font-size: 18px; margin-top: 10px; }
 
-/* Lupa dentro do input */
+/* Container do input com lupa */
 .input-lupa {
   position: relative;
   display: inline-block;
   width: 100%;
 }
 
+.input-lupa img {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  pointer-events: none; /* Não bloqueia digitação */
+}
+
 .input-lupa input {
   width: 100%;
   padding-left: 30px; /* espaço para a lupa */
   box-sizing: border-box;
-}
-
-.input-lupa::before {
-  content: "🔍"; /* emoji de lupa */
-  position: absolute;
-  left: 8px;
-  top: 6px;
-  pointer-events: none; /* não bloqueia digitação */
-  font-size: 16px;
 }
 </style>
 </head>
@@ -42,6 +43,7 @@ button { cursor: pointer; }
 
 <h2>Buscar item (lupa)</h2>
 <div class="input-lupa">
+  <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
   <input type="text" id="busca" placeholder="Digite para buscar..." onkeyup="filtrarLista()">
 </div>
 <ul id="listaItens"></ul>
