@@ -5,24 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sistema de Custos de Receita</title>
 <style>
+  /* ===== Geral ===== */
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #FAF9F6;
     color: #212121;
     margin: 0;
     padding: 0;
   }
+
   header {
     background: #1E88E5;
     color: #fff;
     padding: 1rem;
     text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
+
   .container {
     max-width: 1200px;
     margin: auto;
     padding: 1rem;
   }
+
+  /* ===== Busca ===== */
   .busca {
     margin-bottom: 1rem;
     display: flex;
@@ -30,19 +38,36 @@
   }
   .busca input {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
     border: 1px solid #E0E0E0;
-    border-radius: 4px;
-    margin-right: 0.5rem;
+    border-radius: 8px 0 0 8px;
+    font-size: 1rem;
   }
   .busca img {
-    width: 24px;
+    width: 32px;
+    height: 32px;
+    background: #E0E0E0;
+    padding: 4px;
+    border-radius: 0 8px 8px 0;
     cursor: pointer;
   }
+
+  /* ===== Lista de ingredientes ===== */
+  #lista div {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #BDBDBD;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #lista div:hover {
+    background: #E0E0E0;
+  }
+
+  /* ===== Cards ===== */
   .card-item {
     background: #FCFCFC;
     border: 1px solid #E0E0E0;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 1rem;
     margin-bottom: 1rem;
     display: flex;
@@ -50,21 +75,25 @@
     transition: all 0.3s ease;
   }
   .card-item:hover {
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
   }
   .card-header {
     font-weight: bold;
     margin-bottom: 0.5rem;
+    font-size: 1.1rem;
   }
   .input-group {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
+    align-items: center;
   }
   .input-group input, .input-group select {
     padding: 0.5rem;
     border: 1px solid #E0E0E0;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 0.95rem;
     flex: 1;
   }
   .input-group .custo {
@@ -73,18 +102,26 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    font-size: 1rem;
+    color: #1E88E5;
   }
   .input-group button {
     background: #E53935;
     color: #fff;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 0.5rem 1rem;
     cursor: pointer;
+    transition: background 0.2s;
   }
+  .input-group button:hover {
+    background: #B71C1C;
+  }
+
+  /* ===== Total ===== */
   #total-container {
     text-align: right;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: bold;
     margin-top: 1rem;
   }
@@ -110,6 +147,9 @@
 </div>
 
 <script>
+// ============================
+// Ingredientes e unidades
+// ============================
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho de Natural",
 "Amido de milho","Aroma de Baunilia","Aroma de Cebola","Aroma de Chocolate",
@@ -143,33 +183,17 @@ const unidades = [
   {label:"unidade", value:"unidade"}
 ];
 
-const listaDiv = document.getElementById("lista");
-const cardsContainer = document.getElementById("cardsContainer");
+// ============================
+// Variáveis
+// ============================
 let itensAdicionados = {};
+const cardsContainer = document.getElementById("cardsContainer");
+const buscaInput = document.getElementById("busca");
+const listaDiv = document.getElementById("lista");
 
-// Mostrar lista filtrada
-function mostrarLista(array){
-  listaDiv.innerHTML="";
-  array.forEach(item=>{
-    const div = document.createElement("div");
-    div.textContent=item;
-    div.style.cursor="pointer";
-    div.onclick=()=>adicionarItem(item);
-    listaDiv.appendChild(div);
-  });
-}
-
-// Inicial exibe todos
-mostrarLista(ingredientes);
-
-// Pesquisa
-document.getElementById("busca").addEventListener("input", e=>{
-  const val = e.target.value.toLowerCase();
-  const filtrados = ingredientes.filter(i=>i.toLowerCase().includes(val));
-  mostrarLista(filtrados);
-});
-
+// ============================
 // LocalStorage histórico de preços
+// ============================
 function salvarHistorico(nome, preco){
   let historico = JSON.parse(localStorage.getItem("historicoPrecos")) || {};
   historico[nome] = preco;
@@ -180,18 +204,20 @@ function pegarHistorico(nome){
   return historico[nome] || "";
 }
 
+// ============================
 // Adicionar item
+// ============================
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome]=true;
 
   const card = document.createElement("div");
   card.className="card-item";
-  card.dataset.nome=nome;
+  card.dataset.nome = nome;
 
   const precoHistorico = pegarHistorico(nome);
 
-  card.innerHTML=`
+  card.innerHTML = `
     <div class="card-header">${nome}</div>
     <div class="input-group">
       <input type="number" placeholder="Custo" step="0.01" value="${precoHistorico}" oninput="calcularEAtualizarHistorico(this,'${nome}')">
@@ -204,31 +230,37 @@ function adicionarItem(nome){
     </div>
   `;
   cardsContainer.appendChild(card);
-  document.getElementById("busca").value="";
+  buscaInput.value = "";
   mostrarLista(ingredientes);
 }
 
-// Função calcular e atualizar histórico
+// ============================
+// Atualizar histórico
+// ============================
 function calcularEAtualizarHistorico(input, nome){
   calcular();
   salvarHistorico(nome, parseFloat(input.value)||0);
 }
 
-// Função calcular subtotal e total
+// ============================
+// Calcular subtotal e total
+// ============================
 function calcular(){
-  let total=0;
+  let total = 0;
   document.querySelectorAll(".card-item").forEach(card=>{
-    const inputs=card.querySelectorAll("input[type=number]");
-    const custo=parseFloat(inputs[0].value)||0;
-    const qtd=parseFloat(inputs[1].value)||0;
-    const subtotal=custo*qtd;
-    card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
-    total+=subtotal;
+    const inputs = card.querySelectorAll("input[type=number]");
+    const custo = parseFloat(inputs[0].value) || 0;
+    const qtd = parseFloat(inputs[1].value) || 0;
+    const subtotal = custo * qtd;
+    card.querySelector(".custo").textContent = "R$ " + subtotal.toFixed(2);
+    total += subtotal;
   });
-  document.getElementById("total").textContent=total.toFixed(2);
+  document.getElementById("total").textContent = total.toFixed(2);
 }
 
+// ============================
 // Remover item
+// ============================
 function removerItem(botao){
   const card = botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
@@ -236,6 +268,34 @@ function removerItem(botao){
   calcular();
   mostrarLista(ingredientes);
 }
+
+// ============================
+// Mostrar lista filtrada
+// ============================
+function mostrarLista(array){
+  listaDiv.innerHTML="";
+  array.forEach(item=>{
+    const div = document.createElement("div");
+    div.textContent=item;
+    div.style.cursor="pointer";
+    div.onclick=()=>adicionarItem(item);
+    listaDiv.appendChild(div);
+  });
+}
+
+// ============================
+// Pesquisa ingredientes
+// ============================
+buscaInput.addEventListener("input", e=>{
+  const val = e.target.value.toLowerCase();
+  const filtrados = ingredientes.filter(i=>i.toLowerCase().includes(val));
+  mostrarLista(filtrados);
+});
+
+// ============================
+// Inicial
+// ============================
+mostrarLista(ingredientes);
 </script>
 
 </body>
