@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Calculadora de Custos Profissional</title>
+<title>Calculadora de Custos Premium</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* ===== Corpo ===== */
@@ -58,7 +58,8 @@ h1 {
   font-size: 16px;
   border: 2px solid #E0E0E0;
   border-radius: 15px;
-  background: #FCFCFC;
+  background: rgba(252,252,252,0.85);
+  backdrop-filter: blur(4px);
   color: #212121;
   transition: border 0.3s, box-shadow 0.3s;
 }
@@ -75,7 +76,8 @@ h1 {
   border-radius: 15px;
   max-height: 220px;
   overflow-y: auto;
-  background: #FCFCFC;
+  background: rgba(252,252,252,0.9);
+  backdrop-filter: blur(3px);
   padding: 0;
   margin: 0 0 20px 0;
   position: relative;
@@ -103,21 +105,21 @@ h1 {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(6px);
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  padding: 18px;
-  margin-bottom: 18px;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
   opacity: 0;
-  transform: translateY(-10px);
-  animation: fadeIn 0.3s forwards;
+  transform: translateY(-20px);
+  animation: fadeIn 0.4s forwards;
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .card-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.15);
 }
 
 .card-item .info {
@@ -136,31 +138,33 @@ h1 {
   align-items: center;
 }
 
+/* Inputs e selects premium */
 .card-item input[type=number], .card-item select {
   font-size: 16px;
   padding: 8px 10px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 2px solid #E0E0E0;
-  background: #FAF9F6;
+  background: rgba(250,249,246,0.9);
   color: #212121;
   text-align: center;
   width: 110px;
-  transition: border 0.3s, box-shadow 0.3s;
+  transition: border 0.3s, box-shadow 0.3s, transform 0.2s;
 }
 
 .card-item input[type=number]:focus, .card-item select:focus {
   border-color: #1E88E5;
   box-shadow: 0 0 12px rgba(30,136,229,0.25);
   outline: none;
+  transform: scale(1.02);
 }
 
-/* ===== Botão remover ===== */
+/* Botão remover premium */
 .card-item button {
   background: #E53935;
   color: #FFFFFF;
   border: none;
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: 15px;
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
@@ -169,17 +173,29 @@ h1 {
 
 .card-item button:hover {
   background: #C62828;
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+/* Subtotal */
+.card-item .custo {
+  font-weight: 600;
+  font-size: 16px;
+  transition: color 0.3s;
 }
 
 /* ===== Total ===== */
 .total {
   text-align: right;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   color: #1E88E5;
-  margin-top: 25px;
+  margin-top: 30px;
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(6px);
+  padding: 12px 20px;
+  border-radius: 15px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.1);
 }
 
 /* ===== Animação fadeIn ===== */
@@ -204,7 +220,7 @@ h1 {
 </head>
 <body>
 <div class="container">
-<h1>Calculadora de Custos Profissional</h1>
+<h1>Calculadora de Custos Premium</h1>
 
 <div class="input-lupa">
   <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
@@ -218,7 +234,7 @@ h1 {
 </div>
 
 <script>
-// Lista de ingredientes
+// Lista completa de ingredientes
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
@@ -308,6 +324,12 @@ function calcular(){
     const qtd = parseFloat(inputs[1].value) || 0;
     const subtotal = custo * qtd;
     card.querySelector(".custo").textContent = "R$ " + subtotal.toFixed(2);
+
+    // Cor dinâmica do subtotal
+    if(subtotal <= 50) card.querySelector(".custo").style.color = "#43A047"; // verde
+    else if(subtotal <= 200) card.querySelector(".custo").style.color = "#FB8C00"; // laranja
+    else card.querySelector(".custo").style.color = "#E53935"; // vermelho
+
     total += subtotal;
   });
   document.getElementById("total").textContent = total.toFixed(2);
