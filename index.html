@@ -1,63 +1,141 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Sistema de Custeio</title>
-
-<script src="ingredientes.js"></script>
-<script src="app.js" defer></script>
+<title>Calculadora de Custos da Receita</title>
 
 <style>
-body { font-family: Arial; padding: 20px; }
-input, select, button { padding: 4px; }
-table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-ul { border: 1px solid #ccc; max-height: 150px; overflow-y: auto; padding: 0; }
-li { list-style: none; padding: 6px; cursor: pointer; }
-li:hover { background: #eee; }
-button { cursor: pointer; }
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+select, input, button {
+  margin: 5px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+  text-align: center;
+}
+.total {
+  font-weight: bold;
+  font-size: 18px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Buscar item</h2>
-<input type="text" onkeyup="buscar(this.value)">
-<ul id="lista"></ul>
+<h2>Calculadora de Custos da Receita</h2>
 
-<h2>Receita</h2>
+<select id="ingredienteSelect">
+  <option value="">Selecione um item</option>
+</select>
+
+<button onclick="adicionarItem()">Adicionar</button>
 
 <table>
 <thead>
 <tr>
-<th>Item</th>
-<th>Qtd usada</th>
-<th>Unidade usada</th>
-<th>Tipo de compra</th>
-<th>Preço compra (R$)</th>
-<th>Custo (R$)</th>
-<th>Remover</th>
+  <th>Item</th>
+  <th>Custo por unidade (R$)</th>
+  <th>Quantidade usada</th>
+  <th>Unidade</th>
+  <th>Custo do item (R$)</th>
+  <th>Remover</th>
 </tr>
 </thead>
-<tbody id="tabela"></tbody>
+
+<tbody id="tabelaItens"></tbody>
 </table>
 
-<h3>Total: R$ <span id="total">0.00</span></h3>
+<p class="total">
+  Custo total da receita: R$ <span id="total">0.00</span>
+</p>
 
 <script>
-function buscar(txt){
-  const ul=document.getElementById("lista");
-  ul.innerHTML="";
-  if(!txt) return;
+// ===== ITENS =====
+const ingredientes = [
+  "Açúcar Refinado","Farinha de Trigo","Sal","Óleo de Soja","Fermento",
+  "Amido de Milho","Cacau em Pó","Chocolate em Pó","Margarina",
+  "Manteiga","Leite","Coco","Aroma","Embalagem","Caixa de Papelão"
+].sort();
 
-  ingredientes
-    .filter(i=>i.nome.toLowerCase().includes(txt.toLowerCase()))
-    .forEach(i=>{
-      const li=document.createElement("li");
-      li.textContent=i.nome;
-      li.onclick=()=>adicionarItem(i.nome);
-      ul.appendChild(li);
-    });
+// ===== UNIDADES (ORDEM CORRETA) =====
+const unidades = [
+  { label: "Unidade", value: "un" },
+  { label: "Quilo (kg)", value: "kg" },
+  { label: "Grama (g)", value: "g" },
+  { label: "Litro (L)", value: "L" },
+  { label: "Mililitro (ml)", value: "ml" }
+];
+
+// ===== POPULAR SELECT =====
+const select = document.getElementById("ingredienteSelect");
+ingredientes.forEach(item => {
+  const opt = document.createElement("option");
+  opt.value = item;
+  opt.textContent = item;
+  select.appendChild(opt);
+});
+
+const itensAdicionados = {};
+
+// ===== ADICIONAR ITEM =====
+function adicionarItem() {
+  const nome = select.value;
+  if (!nome || itensAdicionados[nome]) return;
+
+  itensAdicionados[nome] = true;
+
+  const tr = document.createElement("tr");
+  tr.dataset.nome = nome;
+
+  tr.innerHTML = `
+    <td>${nome}</td>
+    <td><input type="number" step="0.01" oninput="calcular()"></td>
+    <td><input type="number" step="0.001" oninput="calcular()"></td>
+    <td>
+      <select onchange="calcular()">
+        ${unidades.map(u => `<option value="${u.value}">${u.label}</option>`).join("")}
+      </select>
+    </td>
+    <td class="custo">0.00</td>
+    <td>
+      <button onclick="removerItem(this)">❌</button>
+    </td>
+  `;
+
+  document.getElementById("tabelaItens").appendChild(tr);
+}
+
+// ===== CALCULAR =====
+function calcular() {
+  let total = 0;
+
+  document.querySelectorAll("#tabelaItens tr").forEach(tr => {
+    const custoUnit = parseFloat(tr.children[1].children[0].value) || 0;
+    const quantidade = parseFloat(tr.children[2].children[0].value) || 0;
+
+    const subtotal = custoUnit * quantidade;
+    tr.querySelector(".custo").textContent = subtotal.toFixed(2);
+    total += subtotal;
+  });
+
+  document.getElementById("total").textContent = total.toFixed(2);
+}
+
+// ===== REMOVER =====
+function removerItem(botao) {
+  const tr = botao.closest("tr");
+  delete itensAdicionados[tr.dataset.nome];
+  tr.remove();
+  calcular();
 }
 </script>
 
