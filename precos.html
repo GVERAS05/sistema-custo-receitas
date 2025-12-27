@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Preços Unitários - Calculadora de Custos</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Corpo ===== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #FAF9F6;
+  color: #212121;
+}
+
+/* ===== Container ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 25px 20px;
+}
+
+/* ===== Cabeçalho ===== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+header h1 {
+  font-size: 36px;
+  color: #1E88E5;
+}
+
+/* ===== Grid de preços ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #FCFCFC;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+
+thead th {
+  text-align: left;
+  padding: 12px 15px;
+  background: #E0E0E0;
+  font-weight: 600;
+}
+
+tbody td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #BDBDBD;
+}
+
+tbody tr:hover {
+  background: #f0f0f0;
+}
+
+input[type=number] {
+  width: 120px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 2px solid #E0E0E0;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+input[type=number]:focus {
+  border-color: #1E88E5;
+  box-shadow: 0 0 12px rgba(30,136,229,0.25);
+  outline: none;
+}
+
+/* ===== Botões ===== */
+button {
+  background: #43A047;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background: #388E3C;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* ===== Responsivo ===== */
+@media(max-width: 750px){
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  thead tr {
+    display: none;
+  }
+  tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 10px;
+    border-bottom: 1px solid #BDBDBD;
+  }
+  tbody td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    margin-right: 10px;
+  }
+  input[type=number] {
+    width: 80px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Preços Unitários</h1>
+<button onclick="resetPrecos()">Resetar todos preços</button>
+</header>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ingrediente</th>
+      <th>Preço unitário (R$)</th>
+    </tr>
+  </thead>
+  <tbody id="tabelaPrecos"></tbody>
+</table>
+</div>
+
+<script>
+// Lista completa de ingredientes
+const ingredientes = [
+"Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
+"Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
+"Aroma de Três Leite","Aroma de Maisena","Aroma de Manteiga","Aroma de Maria","Aroma de Milho",
+"Aroma Alho","Caramelo","Aroma de Queijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio",
+"Cacau em pó","Cebola Natural Roxa","Caixa de Papelão","Emb. Saco Fd. 50x80","Chocolate em Pó",
+"Embalagem Transp. Lisa","Embalagem folhada Cebola","Embalagem folhada Alho","Embalagem Folhada Manteiga",
+"Milho Inatura","Farelo","Fubá de milho","Embalagem Milho","Ezimas","Embalagem 8 Grãos",
+"Embalagem Água e Sal","Embalagem Integral","Emb. Rainha Maisena","Emb. Rainha Leite","Emb. Rainha Cracker",
+"Emb. Rainha Rosca Leite","Emb. Rainha Rosca Chocolate","Emb. Rainha Rosca Coco","Emb. Rainha Manteiga",
+"Emb. Rainha Alho","Emb. Rainha Cebola","Farinha de Trigo Fama Panificação","Farinha de Trigo Panete Comum",
+"Farinha de Trigo Evita 2","Fécula de Mandioca","Fermento Instantâneo","Gordura Agropalma","Lecetina de Soja",
+"Manteiga Itacolomir","Margarina Folhada Rica","Margarina puro sabor","Margarina","Mel Caseiro",
+"Metabisulfito","Óleo de Soja","Milho Gelatinizado","Gordura Líquida Vegetal","Paulialfa","Paulitase",
+"Paulivita","Pirofosfato","Sal Micronizado","Sal Refinado","Soro de Leite","Unimelo","Etiquetas Conchita",
+"Embalagem de Caixa p/ Folhada","Óleo Pronto Cebola","Filme Rezinite","Fita Sela Caixa","Gelatina de Milho",
+"Embalagem Flocão","Embalagem Dallato Leite","Embalagem Dallato Coco","Embalagem Dallato Chocolate",
+"Aroma de Limão","Farofa","B. de Amônio","Farinha de Trigo Sc","Sal","Margarina M. Ouro","Amido de Milho",
+"Gordura Hid.","Tempero Cebola","Tempero Mant.","Tempero Alho","Esponja","Fermento","Paulivita",
+"Açúcar"
+].sort();
+
+// Função para carregar preços do localStorage
+function carregarPrecos() {
+  const tabela = document.getElementById("tabelaPrecos");
+  tabela.innerHTML = "";
+  ingredientes.forEach(nome => {
+    const precoSalvo = localStorage.getItem("preco_" + nome) || "";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td data-label="Ingrediente">${nome}</td>
+      <td data-label="Preço unitário">
+        <input type="number" step="0.01" value="${precoSalvo}" onchange="salvarPreco('${nome}', this.value)">
+      </td>
+    `;
+    tabela.appendChild(tr);
+  });
+}
+
+// Função para salvar preço unitário no localStorage
+function salvarPreco(nome, valor) {
+  localStorage.setItem("preco_" + nome, valor);
+}
+
+// Função para resetar todos os preços
+function resetPrecos() {
+  if(confirm("Deseja realmente resetar todos os preços?")) {
+    ingredientes.forEach(nome => localStorage.removeItem("preco_" + nome));
+    carregarPrecos();
+  }
+}
+
+// Inicializa a tabela
+carregarPrecos();
+</script>
+</body>
+</html>
