@@ -2,138 +2,94 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Preços Unitários - Calculadora de Custos</title>
+<title>Preços Unitários</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* ===== Corpo ===== */
 body {
   margin: 0;
-  padding: 0;
   font-family: 'Roboto', sans-serif;
   background: #FAF9F6;
   color: #212121;
 }
 
-/* ===== Container ===== */
 .container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 25px 20px;
+  padding: 20px;
 }
 
-/* ===== Cabeçalho ===== */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 25px;
-}
-
-header h1 {
-  font-size: 36px;
+h2 {
   color: #1E88E5;
+  margin-bottom: 20px;
 }
 
-/* ===== Grid de preços ===== */
 table {
   width: 100%;
   border-collapse: collapse;
   background: #FCFCFC;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
-thead th {
-  text-align: left;
+th, td {
   padding: 12px 15px;
-  background: #E0E0E0;
+  text-align: left;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+th {
+  background: #FAF9F6;
+  color: #333;
   font-weight: 600;
 }
 
-tbody td {
-  padding: 12px 15px;
-  border-bottom: 1px solid #BDBDBD;
-}
-
-tbody tr:hover {
-  background: #f0f0f0;
-}
-
-input[type=number] {
-  width: 120px;
-  padding: 8px 10px;
+td input {
+  width: 100px;
+  padding: 8px;
   border-radius: 8px;
   border: 2px solid #E0E0E0;
   text-align: center;
   transition: all 0.3s;
 }
 
-input[type=number]:focus {
+td input:focus {
   border-color: #1E88E5;
-  box-shadow: 0 0 12px rgba(30,136,229,0.25);
+  box-shadow: 0 0 10px rgba(30,136,229,0.2);
   outline: none;
 }
 
-/* ===== Botões ===== */
-button {
+button.save-btn {
+  margin-top: 20px;
   background: #43A047;
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 10px 15px;
+  border-radius: 15px;
+  padding: 12px 20px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.2s;
 }
 
-button:hover {
+button.save-btn:hover {
   background: #388E3C;
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-}
-
-/* ===== Responsivo ===== */
-@media(max-width: 750px){
-  table, thead, tbody, th, td, tr {
-    display: block;
-  }
-  thead tr {
-    display: none;
-  }
-  tbody td {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 10px;
-    border-bottom: 1px solid #BDBDBD;
-  }
-  tbody td:before {
-    content: attr(data-label);
-    font-weight: 600;
-    margin-right: 10px;
-  }
-  input[type=number] {
-    width: 80px;
-  }
 }
 </style>
 </head>
 <body>
 <div class="container">
-<header>
-<h1>Preços Unitários</h1>
-<button onclick="resetPrecos()">Resetar todos preços</button>
-</header>
-
-<table>
+<h2>Alterar Preços Unitários</h2>
+<table id="precosTable">
   <thead>
     <tr>
       <th>Ingrediente</th>
-      <th>Preço unitário (R$)</th>
+      <th>Preço Unitário (R$)</th>
     </tr>
   </thead>
-  <tbody id="tabelaPrecos"></tbody>
+  <tbody></tbody>
 </table>
+<button class="save-btn" onclick="salvarPrecos()">Salvar Preços</button>
 </div>
 
 <script>
@@ -160,38 +116,37 @@ const ingredientes = [
 "Açúcar"
 ].sort();
 
-// Função para carregar preços do localStorage
-function carregarPrecos() {
-  const tabela = document.getElementById("tabelaPrecos");
-  tabela.innerHTML = "";
-  ingredientes.forEach(nome => {
-    const precoSalvo = localStorage.getItem("preco_" + nome) || "";
+// Puxar preços salvos do LocalStorage
+let precosSalvos = JSON.parse(localStorage.getItem("precosUnitarios")) || {};
+
+// Função para montar a tabela
+function montarTabela() {
+  const tbody = document.querySelector("#precosTable tbody");
+  tbody.innerHTML = "";
+  ingredientes.forEach(ing => {
+    const preco = precosSalvos[ing] || "";
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td data-label="Ingrediente">${nome}</td>
-      <td data-label="Preço unitário">
-        <input type="number" step="0.01" value="${precoSalvo}" onchange="salvarPreco('${nome}', this.value)">
-      </td>
+      <td>${ing}</td>
+      <td><input type="number" step="0.01" value="${preco}" data-nome="${ing}"></td>
     `;
-    tabela.appendChild(tr);
+    tbody.appendChild(tr);
   });
 }
 
-// Função para salvar preço unitário no localStorage
-function salvarPreco(nome, valor) {
-  localStorage.setItem("preco_" + nome, valor);
-}
+montarTabela();
 
-// Função para resetar todos os preços
-function resetPrecos() {
-  if(confirm("Deseja realmente resetar todos os preços?")) {
-    ingredientes.forEach(nome => localStorage.removeItem("preco_" + nome));
-    carregarPrecos();
-  }
+// Função para salvar preços
+function salvarPrecos() {
+  const inputs = document.querySelectorAll("#precosTable input");
+  inputs.forEach(input => {
+    const nome = input.dataset.nome;
+    const valor = parseFloat(input.value) || 0;
+    precosSalvos[nome] = valor;
+  });
+  localStorage.setItem("precosUnitarios", JSON.stringify(precosSalvos));
+  alert("Preços salvos com sucesso!");
 }
-
-// Inicializa a tabela
-carregarPrecos();
 </script>
 </body>
 </html>
