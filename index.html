@@ -16,45 +16,49 @@ body {
 
 /* ===== Container ===== */
 .container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 25px 20px;
 }
 
-/* ===== Título ===== */
-h1 {
-  text-align: center;
+/* ===== Cabeçalho ===== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 35px;
+}
+
+header h1 {
+  font-size: 42px;
   color: #1E88E5;
-  font-size: 40px;
-  margin-bottom: 25px;
   letter-spacing: 0.5px;
 }
 
-/* ===== Barra de pesquisa ===== */
-.search-container {
+header .search-container {
   position: relative;
-  margin-bottom: 30px;
+  width: 300px;
 }
 
-.search-container input {
+header .search-container input {
   width: 100%;
-  padding: 14px 50px 14px 20px;
-  font-size: 18px;
+  padding: 12px 45px 12px 18px;
   border-radius: 25px;
   border: 2px solid #E0E0E0;
-  background: #FCFCFC;
+  font-size: 16px;
   transition: all 0.3s;
+  background: #FCFCFC;
 }
 
-.search-container input:focus {
+header .search-container input:focus {
   border-color: #1E88E5;
   box-shadow: 0 0 15px rgba(30,136,229,0.2);
   outline: none;
 }
 
-.search-container img {
+header .search-container img {
   position: absolute;
-  right: 15px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   width: 24px;
@@ -89,13 +93,14 @@ h1 {
   font-weight: 600;
 }
 
-/* ===== Cards ===== */
+/* ===== Grid de cards ===== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
+/* ===== Card individual ===== */
 .card-item {
   background: #FCFCFC;
   border-radius: 20px;
@@ -104,7 +109,7 @@ h1 {
   display: flex;
   flex-direction: column;
   opacity: 0;
-  transform: translateY(-15px);
+  transform: translateY(-20px);
   animation: fadeIn 0.4s forwards;
   transition: all 0.3s ease;
 }
@@ -126,6 +131,7 @@ h1 {
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .card-item input[type=number], .card-item select {
@@ -150,15 +156,15 @@ h1 {
   font-size: 16px;
   color: #333;
   min-width: 90px;
+  text-align: right;
 }
 
-/* Botão remover */
 .card-item button {
   background: #E53935;
   color: white;
   border: none;
   border-radius: 15px;
-  padding: 10px;
+  padding: 10px 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -183,7 +189,7 @@ h1 {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* ===== Animação ===== */
+/* ===== Animações ===== */
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -196,17 +202,26 @@ h1 {
   .cards-grid {
     grid-template-columns: 1fr;
   }
+  header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  header .search-container {
+    width: 100%;
+  }
 }
 </style>
 </head>
 <body>
 <div class="container">
+<header>
 <h1>Calculadora de Custos Premium</h1>
-
 <div class="search-container">
-  <input type="text" id="busca" placeholder="Digite para buscar..." onkeyup="filtrarLista()">
+  <input type="text" id="busca" placeholder="Pesquisar ingrediente..." onkeyup="filtrarLista()">
   <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
 </div>
+</header>
 
 <ul id="listaItens"></ul>
 
