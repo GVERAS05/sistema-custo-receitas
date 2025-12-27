@@ -10,15 +10,15 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
-  background: #FAF9F6;
+  background: linear-gradient(135deg, #FAF9F6, #F5F5F5);
   color: #212121;
 }
 
 /* ===== Container ===== */
 .container {
-  max-width: 1300px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 25px 20px;
+  padding: 25px 30px;
 }
 
 /* ===== Cabeçalho ===== */
@@ -26,28 +26,30 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 35px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
 }
 
 header h1 {
-  font-size: 42px;
+  font-size: 46px;
+  font-weight: 700;
   color: #1E88E5;
   letter-spacing: 0.5px;
 }
 
 header .search-container {
   position: relative;
-  width: 300px;
+  width: 320px;
 }
 
 header .search-container input {
   width: 100%;
-  padding: 12px 45px 12px 18px;
-  border-radius: 25px;
+  padding: 14px 50px 14px 20px;
+  border-radius: 30px;
   border: 2px solid #E0E0E0;
   font-size: 16px;
-  transition: all 0.3s;
   background: #FCFCFC;
+  transition: all 0.3s;
 }
 
 header .search-container input:focus {
@@ -58,11 +60,11 @@ header .search-container input:focus {
 
 header .search-container img {
   position: absolute;
-  right: 12px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   opacity: 0.7;
 }
 
@@ -70,18 +72,19 @@ header .search-container img {
 #listaItens {
   border: 2px solid #E0E0E0;
   border-radius: 25px;
-  max-height: 220px;
+  max-height: 250px;
   overflow-y: auto;
   background: #FCFCFC;
   padding: 0;
-  margin: 0 0 30px 0;
+  margin: 0 0 35px 0;
   position: relative;
   z-index: 10;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
 #listaItens li {
   list-style: none;
-  padding: 12px 20px;
+  padding: 14px 22px;
   cursor: pointer;
   border-bottom: 1px solid #BDBDBD;
   transition: background 0.2s, color 0.2s;
@@ -96,66 +99,66 @@ header .search-container img {
 /* ===== Grid de cards ===== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
 }
 
 /* ===== Card individual ===== */
 .card-item {
   background: #FCFCFC;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  padding: 20px;
+  border-radius: 25px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  opacity: 0;
-  transform: translateY(-20px);
-  animation: fadeIn 0.4s forwards;
   transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(-25px);
+  animation: fadeIn 0.5s forwards;
 }
 
 .card-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.12);
 }
 
 .card-item .card-header {
-  font-weight: 600;
-  font-size: 18px;
-  margin-bottom: 12px;
-  color: #333;
+  font-weight: 700;
+  font-size: 20px;
+  margin-bottom: 14px;
+  color: #333333;
 }
 
 .card-item .input-group {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .card-item input[type=number], .card-item select {
-  padding: 10px;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 15px;
   border: 2px solid #E0E0E0;
   background: #FAF9F6;
   font-size: 16px;
-  width: 100px;
+  width: 110px;
   transition: all 0.3s;
   text-align: center;
 }
 
 .card-item input[type=number]:focus, .card-item select:focus {
   border-color: #1E88E5;
-  box-shadow: 0 0 12px rgba(30,136,229,0.25);
+  box-shadow: 0 0 15px rgba(30,136,229,0.25);
   outline: none;
 }
 
 .card-item .custo {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
   color: #333;
-  min-width: 90px;
+  min-width: 100px;
   text-align: right;
 }
 
@@ -163,8 +166,8 @@ header .search-container img {
   background: #E53935;
   color: white;
   border: none;
-  border-radius: 15px;
-  padding: 10px 12px;
+  border-radius: 18px;
+  padding: 12px 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -173,20 +176,20 @@ header .search-container img {
 .card-item button:hover {
   background: #C62828;
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
 }
 
 /* ===== Total ===== */
 .total {
   text-align: right;
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: #1E88E5;
-  margin-top: 40px;
+  margin-top: 50px;
   background: #FCFCFC;
-  padding: 14px 20px;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  padding: 16px 22px;
+  border-radius: 25px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
 }
 
 /* ===== Animações ===== */
@@ -198,14 +201,14 @@ header .search-container img {
 }
 
 /* ===== Responsivo ===== */
-@media(max-width: 750px){
+@media(max-width: 800px){
   .cards-grid {
     grid-template-columns: 1fr;
   }
   header {
     flex-direction: column;
     align-items: stretch;
-    gap: 20px;
+    gap: 25px;
   }
   header .search-container {
     width: 100%;
@@ -231,27 +234,12 @@ header .search-container img {
 </div>
 
 <script>
-// Lista completa de ingredientes
+// Lista completa de ingredientes (exemplo resumido)
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
 "Aroma de Três Leite","Aroma de Maisena","Aroma de Manteiga","Aroma de Maria","Aroma de Milho",
-"Aroma Alho","Caramelo","Aroma de Queijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio",
-"Cacau em pó","Cebola Natural Roxa","Caixa de Papelão","Emb. Saco Fd. 50x80","Chocolate em Pó",
-"Embalagem Transp. Lisa","Embalagem folhada Cebola","Embalagem folhada Alho","Embalagem Folhada Manteiga",
-"Milho Inatura","Farelo","Fubá de milho","Embalagem Milho","Ezimas","Embalagem 8 Grãos",
-"Embalagem Água e Sal","Embalagem Integral","Emb. Rainha Maisena","Emb. Rainha Leite","Emb. Rainha Cracker",
-"Emb. Rainha Rosca Leite","Emb. Rainha Rosca Chocolate","Emb. Rainha Rosca Coco","Emb. Rainha Manteiga",
-"Emb. Rainha Alho","Emb. Rainha Cebola","Farinha de Trigo Fama Panificação","Farinha de Trigo Panete Comum",
-"Farinha de Trigo Evita 2","Fécula de Mandioca","Fermento Instantâneo","Gordura Agropalma","Lecetina de Soja",
-"Manteiga Itacolomir","Margarina Folhada Rica","Margarina puro sabor","Margarina","Mel Caseiro",
-"Metabisulfito","Óleo de Soja","Milho Gelatinizado","Gordura Líquida Vegetal","Paulialfa","Paulitase",
-"Paulivita","Pirofosfato","Sal Micronizado","Sal Refinado","Soro de Leite","Unimelo","Etiquetas Conchita",
-"Embalagem de Caixa p/ Folhada","Óleo Pronto Cebola","Filme Rezinite","Fita Sela Caixa","Gelatina de Milho",
-"Embalagem Flocão","Embalagem Dallato Leite","Embalagem Dallato Coco","Embalagem Dallato Chocolate",
-"Aroma de Limão","Farofa","B. de Amônio","Farinha de Trigo Sc","Sal","Margarina M. Ouro","Amido de Milho",
-"Gordura Hid.","Tempero Cebola","Tempero Mant.","Tempero Alho","Esponja","Fermento","Paulivita",
-"Açúcar"
+"Aroma Alho","Caramelo","Aroma de Queijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio"
 ].sort();
 
 const unidades = [
