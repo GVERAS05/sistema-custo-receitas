@@ -9,7 +9,7 @@ body { font-family: Arial; padding: 20px; }
 input, select, button { padding: 4px; margin: 2px; }
 table { border-collapse: collapse; width: 100%; margin-top: 10px; }
 th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-ul { border: 1px solid #ccc; max-height: 150px; overflow-y: auto; padding: 0; margin-top: 5px; }
+ul { border: 1px solid #ccc; max-height: 200px; overflow-y: auto; padding: 0; margin-top: 5px; }
 li { list-style: none; padding: 6px; cursor: pointer; }
 li:hover { background: #eee; }
 button { cursor: pointer; }
@@ -19,9 +19,9 @@ button { cursor: pointer; }
 
 <body>
 
-<h2>Buscar item</h2>
-<input type="text" placeholder="Digite para buscar..." onkeyup="buscar(this.value)">
-<ul id="lista"></ul>
+<h2>Buscar item (lupa)</h2>
+<input type="text" id="busca" placeholder="Digite para buscar..." onkeyup="filtrarLista()">
+<ul id="listaItens"></ul>
 
 <h2>Receita</h2>
 <table>
@@ -41,14 +41,30 @@ button { cursor: pointer; }
 <p class="total">Custo total da receita: R$ <span id="total">0.00</span></p>
 
 <script>
-// ===== INGREDIENTES =====
+// ===== BASE COMPLETA DE INGREDIENTES =====
 const ingredientes = [
-  "Açúcar Refinado","Farinha de Trigo","Sal","Óleo de Soja","Fermento",
-  "Amido de Milho","Cacau em Pó","Chocolate em Pó","Margarina",
-  "Manteiga","Leite","Coco","Aroma","Embalagem","Caixa de Papelão"
+"Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
+"Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
+"Aroma de Três Leite","Aroma de Maisena","Aroma de Manteiga","Aroma de Maria","Aroma de Milho",
+"Aroma Alho","Caramelo","Aroma de Queijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio",
+"Cacau em pó","Cebola Natural Roxa","Caixa de Papelão","Emb. Saco Fd. 50x80","Chocolate em Pó",
+"Embalagem Transp. Lisa","Embalagem folhada Cebola","Embalagem folhada Alho","Embalagem Folhada Manteiga",
+"Milho Inatura","Farelo","Fubá de milho","Embalagem Milho","Ezimas","Embalagem 8 Grãos",
+"Embalagem Água e Sal","Embalagem Integral","Emb. Rainha Maisena","Emb. Rainha Leite","Emb. Rainha Cracker",
+"Emb. Rainha Rosca Leite","Emb. Rainha Rosca Chocolate","Emb. Rainha Rosca Coco","Emb. Rainha Manteiga",
+"Emb. Rainha Alho","Emb. Rainha Cebola","Farinha de Trigo Fama Panificação","Farinha de Trigo Panete Comum",
+"Farinha de Trigo Evita 2","Fécula de Mandioca","Fermento Instantâneo","Gordura Agropalma","Lecetina de Soja",
+"Manteiga Itacolomir","Margarina Folhada Rica","Margarina puro sabor","Margarina","Mel Caseiro",
+"Metabisulfito","Óleo de Soja","Milho Gelatinizado","Gordura Líquida Vegetal","Paulialfa","Paulitase",
+"Paulivita","Pirofosfato","Sal Micronizado","Sal Refinado","Soro de Leite","Unimelo","Etiquetas Conchita",
+"Embalagem de Caixa p/ Folhada","Óleo Pronto Cebola","Filme Rezinite","Fita Sela Caixa","Gelatina de Milho",
+"Embalagem Flocão","Embalagem Dallato Leite","Embalagem Dallato Coco","Embalagem Dallato Chocolate",
+"Aroma de Limão","Farofa","B. de Amônio","Farinha de Trigo Sc","Sal","Margarina M. Ouro","Amido de Milho",
+"Gordura Hid.","Tempero Cebola","Tempero Mant.","Tempero Alho","Esponja","Fermento","Paulivita",
+"Açúcar"
 ].sort();
 
-// ===== UNIDADES =====
+// ===== UNIDADES NA ORDEM CORRETA =====
 const unidades = [
   { label: "Unidade", value: "un" },
   { label: "Quilo (kg)", value: "kg" },
@@ -57,20 +73,28 @@ const unidades = [
   { label: "Mililitro (ml)", value: "ml" }
 ];
 
-// ===== LUPA / PESQUISA =====
-const lista = document.getElementById("lista");
+// ===== POPULAR LISTA INICIAL =====
+const listaUL = document.getElementById("listaItens");
+const tabelaItens = document.getElementById("tabelaItens");
 let itensAdicionados = {};
 
-function buscar(txt){
-  lista.innerHTML = "";
-  if(!txt) return;
-  ingredientes.filter(i => i.toLowerCase().includes(txt.toLowerCase()))
-            .forEach(i => {
+function mostrarLista(itens) {
+  listaUL.innerHTML = "";
+  itens.forEach(item => {
     const li = document.createElement("li");
-    li.textContent = i;
-    li.onclick = () => adicionarItem(i);
-    lista.appendChild(li);
+    li.textContent = item;
+    li.onclick = () => adicionarItem(item);
+    listaUL.appendChild(li);
   });
+}
+
+// Mostrar todos os itens inicialmente
+mostrarLista(ingredientes);
+
+// ===== FILTRAR LISTA =====
+function filtrarLista() {
+  const txt = document.getElementById("busca").value.toLowerCase();
+  mostrarLista(ingredientes.filter(i => i.toLowerCase().includes(txt)));
 }
 
 // ===== ADICIONAR ITEM =====
@@ -78,7 +102,6 @@ function adicionarItem(nome){
   if(itensAdicionados[nome]) return; // só uma vez
   itensAdicionados[nome] = true;
 
-  const tbody = document.getElementById("tabelaItens");
   const tr = document.createElement("tr");
   tr.dataset.nome = nome;
 
@@ -95,9 +118,11 @@ function adicionarItem(nome){
     <td><button onclick="removerItem(this)">❌</button></td>
   `;
 
-  tbody.appendChild(tr);
-  lista.innerHTML = ""; // limpa lista depois de adicionar
-  document.querySelector('input[placeholder]').value = ""; // limpa pesquisa
+  tabelaItens.appendChild(tr);
+
+  // Limpar pesquisa e lista
+  document.getElementById("busca").value = "";
+  mostrarLista(ingredientes.filter(i => !itensAdicionados[i]));
 }
 
 // ===== CALCULAR =====
@@ -105,8 +130,8 @@ function calcular(){
   let total = 0;
   document.querySelectorAll("#tabelaItens tr").forEach(tr => {
     const custoUnit = parseFloat(tr.children[1].children[0].value) || 0;
-    const quantidade = parseFloat(tr.children[2].children[0].value) || 0;
-    const subtotal = custoUnit * quantidade;
+    const qtd = parseFloat(tr.children[2].children[0].value) || 0;
+    const subtotal = custoUnit * qtd;
     tr.querySelector(".custo").textContent = subtotal.toFixed(2);
     total += subtotal;
   });
