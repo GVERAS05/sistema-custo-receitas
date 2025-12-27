@@ -1,102 +1,95 @@
-// app.js
-
-let itensAdicionados = {};  // ingredientes adicionados na receita atual
-let precoUnitario = {};     // preços unitários salvos
-let receitasSalvas = {};    // receitas completas salvas
+// ===== App.js =====
 const cardsContainer = document.getElementById("cardsContainer");
 const listaUL = document.getElementById("listaItens");
+const buscaInput = document.getElementById("busca");
+const totalEl = document.getElementById("total");
 
-// 1. Carregar preços salvos do localStorage
-function carregarPrecos() {
-  const precos = JSON.parse(localStorage.getItem("precos")) || {};
-  precoUnitario = precos;
-}
+// Carrega preços unitários do localStorage
+let precosUnitarios = JSON.parse(localStorage.getItem("precosUnitarios") || "{}");
 
-// 2. Salvar preços unitários no localStorage
-function salvarPrecos() {
-  localStorage.setItem("precos", JSON.stringify(precoUnitario));
-}
+// Itens adicionados à receita atual
+let itensAdicionados = {};
 
-// 3. Mostrar lista de ingredientes filtráveis
-function mostrarLista(itens) {
+// Mostrar lista de ingredientes filtrada
+function mostrarLista(itens){
   listaUL.innerHTML = "";
-  itens.forEach(item => {
-    if (itensAdicionados[item]) return; // não mostrar se já adicionado
+  itens.forEach(item=>{
+    if(itensAdicionados[item]) return;
     const li = document.createElement("li");
     li.textContent = item;
-    li.onclick = () => adicionarItem(item);
+    li.onclick = ()=>adicionarItem(item);
     listaUL.appendChild(li);
   });
 }
 
-// 4. Adicionar ingrediente à receita
-function adicionarItem(nome) {
-  if (itensAdicionados[nome]) return;
+// Filtrar pesquisa
+buscaInput.addEventListener("keyup", ()=>{
+  const txt = buscaInput.value.toLowerCase();
+  mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
+});
+
+// Adicionar item à receita
+function adicionarItem(nome){
+  if(itensAdicionados[nome]) return;
   itensAdicionados[nome] = true;
 
   const card = document.createElement("div");
   card.className = "card-item";
   card.dataset.nome = nome;
 
-  const preco = precoUnitario[nome] || 0;
+  const preco = precosUnitarios[nome] || "";
 
   card.innerHTML = `
     <div class="card-header">${nome}</div>
     <div class="input-group">
-      <input type="number" placeholder="Custo" value="${preco}" step="0.01" oninput="atualizarPreco('${nome}', this.value)">
+      <input type="number" placeholder="Preço unitário" step="0.01" value="${preco}" oninput="atualizarPreco('${nome}', this.value)">
       <input type="number" placeholder="Qtd" step="0.001" oninput="calcular()">
       <select onchange="calcular()">
         <option value="un">Unidade</option>
-        <option value="kg">Quilo (kg)</option>
-        <option value="g">Grama (g)</option>
-        <option value="L">Litro (L)</option>
-        <option value="ml">Mililitro (ml)</option>
+        <option value="kg">Kg</option>
+        <option value="g">g</option>
+        <option value="L">L</option>
+        <option value="ml">ml</option>
       </select>
       <div class="custo">R$ 0.00</div>
       <button onclick="removerItem(this)">Remover</button>
     </div>
   `;
   cardsContainer.appendChild(card);
-  document.getElementById("busca").value = "";
+  buscaInput.value = "";
   mostrarLista(ingredientes);
   calcular();
 }
 
-// 5. Atualizar preço unitário
-function atualizarPreco(nome, valor) {
-  precoUnitario[nome] = parseFloat(valor) || 0;
-  salvarPrecos();
+// Atualiza preço unitário e salva no localStorage
+function atualizarPreco(nome, valor){
+  precosUnitarios[nome] = parseFloat(valor) || 0;
+  localStorage.setItem("precosUnitarios", JSON.stringify(precosUnitarios));
   calcular();
 }
 
-// 6. Calcular subtotal e total
-function calcular() {
-  let total = 0;
-  document.querySelectorAll(".card-item").forEach(card => {
-    const inputs = card.querySelectorAll("input[type=number]");
-    const custo = parseFloat(inputs[0].value) || 0;
-    const qtd = parseFloat(inputs[1].value) || 0;
-    const subtotal = custo * qtd;
-    card.querySelector(".custo").textContent = "R$ " + subtotal.toFixed(2);
-    total += subtotal;
-  });
-  document.getElementById("total").textContent = total.toFixed(2);
-}
-
-// 7. Remover item da receita
-function removerItem(botao) {
+// Remover item da receita
+function removerItem(botao){
   const card = botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
   card.remove();
+  mostrarLista(ingredientes);
   calcular();
-  mostrarLista(ingredientes);
 }
 
-// 8. Inicializar
-function init() {
-  carregarPrecos();
-  mostrarLista(ingredientes);
-  // Aqui podemos adicionar carregamento da receita atual se quiser
+// Calcular subtotais e total
+function calcular(){
+  let total = 0;
+  document.querySelectorAll(".card-item").forEach(card=>{
+    const inputs = card.querySelectorAll("input[type=number]");
+    const preco = parseFloat(inputs[0].value) || 0;
+    const qtd = parseFloat(inputs[1].value) || 0;
+    const subtotal = preco * qtd;
+    card.querySelector(".custo").textContent = "R$ "+subtotal.toFixed(2);
+    total += subtotal;
+  });
+  totalEl.textContent = total.toFixed(2);
 }
 
-init();
+// Inicializa lista completa
+mostrarLista(ingredientes);
