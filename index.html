@@ -231,7 +231,7 @@ header .search-container img {
 </div>
 
 <script>
-// Lista completa de ingredientes
+// Ingredientes
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
@@ -266,8 +266,8 @@ const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
 let itensAdicionados = {};
 
-// Histórico de preços no localStorage
-let historicoPrecos = JSON.parse(localStorage.getItem("historicoPrecos")) || {};
+// Recupera histórico de preços do localStorage
+let historicoPrecos = JSON.parse(localStorage.getItem("historicoPrecos") || "{}");
 
 function mostrarLista(itens){
   listaUL.innerHTML = "";
@@ -291,18 +291,18 @@ function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome]=true;
 
+  // Pegar histórico do custo apenas
+  const historico = historicoPrecos[nome] || { custo: "", unidade: "un" };
+
   const card = document.createElement("div");
   card.className="card-item";
   card.dataset.nome=nome;
-
-  // Pré-preencher com histórico
-  const historico = historicoPrecos[nome] || { custo: "", qtd: "", unidade: "un" };
 
   card.innerHTML=`
     <div class="card-header">${nome}</div>
     <div class="input-group">
       <input type="number" placeholder="Custo" step="0.01" value="${historico.custo}" oninput="calcular()">
-      <input type="number" placeholder="Qtd" step="0.001" value="${historico.qtd}" oninput="calcular()">
+      <input type="number" placeholder="Qtd" step="0.001" value="" oninput="calcular()">
       <select onchange="calcular()">
         ${unidades.map(u=>`<option value="${u.value}" ${u.value===historico.unidade?'selected':''}>${u.label}</option>`).join("")}
       </select>
@@ -313,25 +313,30 @@ function adicionarItem(nome){
   cardsContainer.appendChild(card);
   document.getElementById("busca").value="";
   mostrarLista(ingredientes);
-  calcular();
 }
 
 function calcular(){
   let total=0;
   document.querySelectorAll(".card-item").forEach(card=>{
     const inputs=card.querySelectorAll("input[type=number]");
-    const select = card.querySelector("select");
     const custo=parseFloat(inputs[0].value)||0;
     const qtd=parseFloat(inputs[1].value)||0;
-    const unidade = select.value;
+    const unidadeSelect = card.querySelector("select");
+    const unidade = unidadeSelect.value;
+
+    // Atualizar subtotal no card
     const subtotal=custo*qtd;
     card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
+
+    // Somar total
     total+=subtotal;
 
-    // Salvar histórico
-    historicoPrecos[card.dataset.nome] = { custo, qtd, unidade };
+    // Salvar apenas o custo por unidade e a unidade
+    historicoPrecos[card.dataset.nome] = { custo, unidade };
   });
   document.getElementById("total").textContent=total.toFixed(2);
+
+  // Atualizar localStorage
   localStorage.setItem("historicoPrecos", JSON.stringify(historicoPrecos));
 }
 
