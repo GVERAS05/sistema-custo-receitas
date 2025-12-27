@@ -26,7 +26,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
 header h1 {
@@ -64,47 +64,7 @@ header .search-container img {
   width: 24px;
   height: 24px;
   opacity: 0.7;
-}
-
-/* ===== Campo nome da receita e botões ===== */
-.recipe-input-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.recipe-input-container input[type=text] {
-  flex: 1;
-  padding: 12px 18px;
-  border-radius: 25px;
-  border: 2px solid #E0E0E0;
-  font-size: 16px;
-  transition: all 0.3s;
-}
-
-.recipe-input-container input[type=text]:focus {
-  border-color: #1E88E5;
-  box-shadow: 0 0 12px rgba(30,136,229,0.25);
-  outline: none;
-}
-
-.recipe-input-container button {
-  background: #43A047;
-  color: white;
-  border: none;
-  border-radius: 15px;
-  padding: 12px 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.recipe-input-container button:hover {
-  background: #388E3C;
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  pointer-events: none;
 }
 
 /* ===== Dropdown lista ===== */
@@ -231,49 +191,28 @@ header .search-container img {
 }
 
 /* ===== Modal receitas ===== */
-#modalReceitas {
+.modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top:0; left:0; right:0; bottom:0;
   background: rgba(0,0,0,0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:100;
 }
 
-#modalReceitas .modal-content {
-  background: #FCFCFC;
-  padding: 30px;
-  border-radius: 25px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 80%;
-  overflow-y: auto;
+.modal-content {
+  background:#FCFCFC;
+  padding:20px;
+  border-radius:15px;
+  max-width:500px;
+  width:90%;
 }
 
-#modalReceitas .modal-content h2 {
-  margin-top: 0;
-  color: #1E88E5;
-}
-
-#modalReceitas .modal-content ul {
-  list-style: none;
-  padding: 0;
-}
-
-#modalReceitas .modal-content li {
-  padding: 10px 15px;
-  border-bottom: 1px solid #BDBDBD;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-#modalReceitas .modal-content li:hover {
-  background: #1E88E5;
-  color: white;
+.modal-header {
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:15px;
 }
 
 /* ===== Animações ===== */
@@ -310,31 +249,32 @@ header .search-container img {
 </div>
 </header>
 
-<!-- NOVO: Campo de nome da receita e botões -->
-<div class="recipe-input-container">
-  <input type="text" id="nomeReceita" placeholder="Nome da receita..." />
-  <button onclick="salvarReceita()">Salvar Receita</button>
-  <button onclick="abrirModalReceitas()">Receitas Salvas</button>
-</div>
-
 <ul id="listaItens"></ul>
 
 <div class="cards-grid" id="cardsContainer"></div>
 
 <p class="total">Custo total: R$ <span id="total">0.00</span></p>
-</div>
 
-<!-- Modal de receitas -->
-<div id="modalReceitas">
+<!-- Modal receitas -->
+<div class="modal" id="modalReceitas">
   <div class="modal-content">
-    <h2>Receitas Salvas</h2>
-    <ul id="listaReceitasSalvas"></ul>
-    <button onclick="fecharModalReceitas()">Fechar</button>
+    <div class="modal-header">Receitas Salvas</div>
+    <div id="listaReceitas"></div>
+    <button onclick="fecharModalReceitas()" style="margin-top:15px;padding:10px 15px;border:none;border-radius:10px;background:#E53935;color:white;cursor:pointer;">Fechar</button>
   </div>
 </div>
 
+<!-- Input para nome da receita -->
+<div style="margin-top:20px;">
+  <input type="text" id="nomeReceita" placeholder="Nome da receita..." style="padding:10px;border-radius:12px;border:2px solid #E0E0E0;width:300px;">
+  <button onclick="salvarReceita()" style="padding:10px 15px;border:none;border-radius:12px;background:#43A047;color:white;cursor:pointer;margin-left:10px;">Salvar Receita</button>
+  <button onclick="abrirModalReceitas()" style="padding:10px 15px;border:none;border-radius:12px;background:#1E88E5;color:white;cursor:pointer;margin-left:10px;">Minhas Receitas</button>
+</div>
+
+</div>
+
 <script>
-// Lista completa de ingredientes
+// ===== Lista de ingredientes =====
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
@@ -367,9 +307,11 @@ const unidades = [
 
 const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
+const nomeReceitaInput = document.getElementById("nomeReceita");
 let itensAdicionados = {};
 let receitasSalvas = JSON.parse(localStorage.getItem("receitasSalvas")||"{}");
 
+// ===== Mostrar lista de pesquisa =====
 function mostrarLista(itens){
   listaUL.innerHTML = "";
   itens.forEach(item=>{
@@ -388,7 +330,8 @@ function filtrarLista(){
   mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
 }
 
-function adicionarItem(nome){
+// ===== Adicionar item =====
+function adicionarItem(nome, custo=0, qtd=0, unidade="un"){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome]=true;
 
@@ -399,35 +342,36 @@ function adicionarItem(nome){
   card.innerHTML=`
     <div class="card-header">${nome}</div>
     <div class="input-group">
-      <input type="number" placeholder="Custo" step="0.01" oninput="calcular(this)">
-      <input type="number" placeholder="Qtd" step="0.001" oninput="calcular(this)">
-      <select onchange="calcular(this)">
-        ${unidades.map(u=>`<option value="${u.value}">${u.label}</option>`).join("")}
+      <input type="number" placeholder="Custo" step="0.01" value="${custo}" oninput="calcular()">
+      <input type="number" placeholder="Qtd" step="0.001" value="${qtd}" oninput="calcular()">
+      <select onchange="calcular()">
+        ${unidades.map(u=>`<option value="${u.value}" ${u.value===unidade?'selected':''}>${u.label}</option>`).join("")}
       </select>
-      <div class="custo">R$ 0.00</div>
+      <div class="custo">R$ ${(custo*qtd).toFixed(2)}</div>
       <button onclick="removerItem(this)">Remover</button>
     </div>
   `;
   cardsContainer.appendChild(card);
   document.getElementById("busca").value="";
   mostrarLista(ingredientes);
-  carregarPrecoCard(card);
+  calcular();
 }
 
-function calcular(input){
+// ===== Calcular custo =====
+function calcular(){
   let total=0;
   document.querySelectorAll(".card-item").forEach(card=>{
     const inputs=card.querySelectorAll("input[type=number]");
     const custo=parseFloat(inputs[0].value)||0;
     const qtd=parseFloat(inputs[1].value)||0;
-    const subtotal=custo*qtd;
-    card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
-    total+=subtotal;
-    salvarPreco(card.dataset.nome, custo); // salvar somente o preço
+    card.querySelector(".custo").textContent="R$ "+(custo*qtd).toFixed(2);
+    total+=custo*qtd;
   });
   document.getElementById("total").textContent=total.toFixed(2);
+  salvarPrecoHistorico();
 }
 
+// ===== Remover item =====
 function removerItem(botao){
   const card=botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
@@ -436,68 +380,85 @@ function removerItem(botao){
   mostrarLista(ingredientes);
 }
 
-function salvarPreco(nome, preco){
-  let precos = JSON.parse(localStorage.getItem("precos")||"{}");
-  precos[nome]=preco;
-  localStorage.setItem("precos", JSON.stringify(precos));
-}
-
-function carregarPrecoCard(card){
-  let precos = JSON.parse(localStorage.getItem("precos")||"{}");
-  let inputs=card.querySelectorAll("input[type=number]");
-  if(precos[card.dataset.nome]!==undefined){
-    inputs[0].value = precos[card.dataset.nome];
-  }
-}
-
-// ===== Funções de receitas =====
+// ===== Salvar receita =====
 function salvarReceita(){
-  const nome = document.getElementById("nomeReceita").value.trim();
-  if(!nome) return alert("Digite um nome para a receita.");
+  const nome = nomeReceitaInput.value.trim();
+  if(!nome) return alert("Digite o nome da receita!");
   const receita = [];
   document.querySelectorAll(".card-item").forEach(card=>{
-    const inputs=card.querySelectorAll("input[type=number]");
-    const select=card.querySelector("select");
+    const nomeItem = card.dataset.nome;
+    const inputs = card.querySelectorAll("input[type=number]");
+    const select = card.querySelector("select");
     receita.push({
-      nome: card.dataset.nome,
+      nome: nomeItem,
       custo: parseFloat(inputs[0].value)||0,
       qtd: parseFloat(inputs[1].value)||0,
       unidade: select.value
     });
   });
-  receitasSalvas[nome]=receita;
+  receitasSalvas[nome] = receita;
   localStorage.setItem("receitasSalvas", JSON.stringify(receitasSalvas));
   alert("Receita salva com sucesso!");
-  document.getElementById("nomeReceita").value="";
+  nomeReceitaInput.value="";
 }
 
+// ===== Modal receitas =====
 function abrirModalReceitas(){
-  const lista = document.getElementById("listaReceitasSalvas");
+  const modal = document.getElementById("modalReceitas");
+  const lista = document.getElementById("listaReceitas");
   lista.innerHTML="";
   Object.keys(receitasSalvas).forEach(nome=>{
-    const li = document.createElement("li");
-    li.textContent=nome;
-    li.onclick=()=>carregarReceita(nome);
-    lista.appendChild(li);
+    const div = document.createElement("div");
+    div.style.marginBottom="8px";
+    div.innerHTML=`<button style="padding:8px 12px;margin:3px;border:none;border-radius:8px;background:#1E88E5;color:white;cursor:pointer;" onclick="carregarReceita('${nome}')">${nome}</button>`;
+    lista.appendChild(div);
   });
-  document.getElementById("modalReceitas").style.display="flex";
+  modal.style.display="flex";
 }
 
 function fecharModalReceitas(){
   document.getElementById("modalReceitas").style.display="none";
 }
 
+// ===== Carregar receita =====
 function carregarReceita(nome){
   const receita = receitasSalvas[nome];
   if(!receita) return;
+
   // Limpa itens atuais
   itensAdicionados = {};
   cardsContainer.innerHTML="";
+
+  // Adiciona itens da receita
   receita.forEach(item=>{
-    adicionarItem(item.nome);
-    const card = document.querySelector(`.card-item[data-nome="${item.nome}"]`);
-    if(card){
-      const inputs=card.querySelectorAll("input[type=number]");
-      const select=card.querySelector("select");
-      inputs[0].value = item.custo;
-      inputs[1].value = item
+    adicionarItem(item.nome, item.custo, item.qtd, item.unidade);
+  });
+
+  fecharModalReceitas();
+}
+
+// ===== Histórico de preços =====
+function salvarPrecoHistorico(){
+  const historico = {};
+  document.querySelectorAll(".card-item").forEach(card=>{
+    const nomeItem = card.dataset.nome;
+    const custo = parseFloat(card.querySelector("input[type=number]").value)||0;
+    historico[nomeItem] = custo;
+  });
+  localStorage.setItem("precoHistorico", JSON.stringify(historico));
+}
+
+// ===== Carregar histórico =====
+window.onload = function(){
+  const historico = JSON.parse(localStorage.getItem("precoHistorico")||"{}");
+  document.querySelectorAll(".card-item").forEach(card=>{
+    const nomeItem = card.dataset.nome;
+    if(historico[nomeItem]){
+      card.querySelector("input[type=number]").value = historico[nomeItem];
+    }
+  });
+  mostrarLista(ingredientes);
+};
+</script>
+</body>
+</html>
