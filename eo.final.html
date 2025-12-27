@@ -27,6 +27,7 @@ header {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 35px;
+  flex-wrap: wrap;
 }
 
 header h1 {
@@ -189,38 +190,59 @@ header .search-container img {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* ===== Abas ===== */
-.tabs {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.tab {
-  padding: 12px 25px;
+/* ===== Receita Section ===== */
+.receita-section {
+  margin-top: 40px;
   background: #FCFCFC;
+  padding: 20px;
   border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  color: #333;
-  transition: all 0.3s;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-.tab.active {
-  background: #1E88E5;
+.receita-section input[type=text] {
+  padding: 10px;
+  border-radius: 12px;
+  border: 2px solid #E0E0E0;
+  width: 60%;
+  font-size: 16px;
+}
+
+.receita-section button {
+  padding: 10px 15px;
+  border-radius: 12px;
+  border: none;
+  background: #43A047;
   color: white;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: all 0.2s;
 }
 
-/* ===== Conteúdo das abas ===== */
-.tab-content {
-  display: none;
+.receita-section button:hover {
+  background: #388E3C;
 }
 
-.tab-content.active {
-  display: block;
+/* Lista de receitas salvas */
+#receitasSalvas {
+  margin-top: 20px;
 }
 
-/* ===== Animações ===== */
+#receitasSalvas li {
+  list-style: none;
+  padding: 10px;
+  border-bottom: 1px solid #BDBDBD;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#receitasSalvas li button {
+  background: #E53935;
+  border-radius: 12px;
+  padding: 5px 10px;
+}
+
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -241,6 +263,10 @@ header .search-container img {
   header .search-container {
     width: 100%;
   }
+  .receita-section input[type=text] {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }
 </style>
 </head>
@@ -254,33 +280,42 @@ header .search-container img {
 </div>
 </header>
 
-<div class="tabs">
-  <div class="tab active" data-tab="ingredientes">Ingredientes</div>
-  <div class="tab" data-tab="precos">Preços Unitários</div>
-  <div class="tab" data-tab="receitas">Receitas Salvas</div>
+<ul id="listaItens"></ul>
+<div class="cards-grid" id="cardsContainer"></div>
+<p class="total">Custo total: R$ <span id="total">0.00</span></p>
+
+<!-- Seção de Receitas -->
+<div class="receita-section">
+  <h2>Receitas</h2>
+  <input type="text" id="nomeReceita" placeholder="Digite o nome da receita">
+  <button onclick="salvarReceita()">Salvar Receita</button>
+  <ul id="receitasSalvas"></ul>
 </div>
 
-<div id="ingredientes" class="tab-content active">
-  <ul id="listaItens"></ul>
-  <div class="cards-grid" id="cardsContainer"></div>
-  <p class="total">Custo total: R$ <span id="total">0.00</span></p>
-</div>
-
-<div id="precos" class="tab-content">
-  <h2>Alterar Preço Unitário</h2>
-  <div id="precosContainer"></div>
-</div>
-
-<div id="receitas" class="tab-content">
-  <h2>Minhas Receitas</h2>
-  <input type="text" id="nomeReceita" placeholder="Nome da receita" style="padding:10px; border-radius:12px; border:2px solid #E0E0E0; width:250px;">
-  <button onclick="salvarReceita()" style="background:#43A047;color:white;border:none;padding:10px 15px;border-radius:12px;margin-left:10px;cursor:pointer;">Salvar Receita</button>
-  <ul id="receitasSalvas" style="margin-top:20px;"></ul>
 </div>
 
 <script>
 // Ingredientes e unidades
-const ingredientes = [/* mesma lista do anterior */].sort();
+const ingredientes = ["Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
+"Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
+"Aroma de Três Leite","Aroma de Maisena","Aroma de Manteiga","Aroma de Maria","Aroma de Milho",
+"Aroma Alho","Caramelo","Aroma de Queijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio",
+"Cacau em pó","Cebola Natural Roxa","Caixa de Papelão","Emb. Saco Fd. 50x80","Chocolate em Pó",
+"Embalagem Transp. Lisa","Embalagem folhada Cebola","Embalagem folhada Alho","Embalagem Folhada Manteiga",
+"Milho Inatura","Farelo","Fubá de milho","Embalagem Milho","Ezimas","Embalagem 8 Grãos",
+"Embalagem Água e Sal","Embalagem Integral","Emb. Rainha Maisena","Emb. Rainha Leite","Emb. Rainha Cracker",
+"Emb. Rainha Rosca Leite","Emb. Rainha Rosca Chocolate","Emb. Rainha Rosca Coco","Emb. Rainha Manteiga",
+"Emb. Rainha Alho","Emb. Rainha Cebola","Farinha de Trigo Fama Panificação","Farinha de Trigo Panete Comum",
+"Farinha de Trigo Evita 2","Fécula de Mandioca","Fermento Instantâneo","Gordura Agropalma","Lecetina de Soja",
+"Manteiga Itacolomir","Margarina Folhada Rica","Margarina puro sabor","Margarina","Mel Caseiro",
+"Metabisulfito","Óleo de Soja","Milho Gelatinizado","Gordura Líquida Vegetal","Paulialfa","Paulitase",
+"Paulivita","Pirofosfato","Sal Micronizado","Sal Refinado","Soro de Leite","Unimelo","Etiquetas Conchita",
+"Embalagem de Caixa p/ Folhada","Óleo Pronto Cebola","Filme Rezinite","Fita Sela Caixa","Gelatina de Milho",
+"Embalagem Flocão","Embalagem Dallato Leite","Embalagem Dallato Coco","Embalagem Dallato Chocolate",
+"Aroma de Limão","Farofa","B. de Amônio","Farinha de Trigo Sc","Sal","Margarina M. Ouro","Amido de Milho",
+"Gordura Hid.","Tempero Cebola","Tempero Mant.","Tempero Alho","Esponja","Fermento","Paulivita",
+"Açúcar"].sort();
+
 const unidades = [
   { label: "Unidade", value: "un" },
   { label: "Quilo (kg)", value: "kg" },
@@ -289,16 +324,12 @@ const unidades = [
   { label: "Mililitro (ml)", value: "ml" }
 ];
 
-// Variáveis
 const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
-const precosContainer = document.getElementById("precosContainer");
-const receitasSalvasUL = document.getElementById("receitasSalvas");
 let itensAdicionados = {};
-let precosUnitarios = JSON.parse(localStorage.getItem("precosUnitarios")||"{}");
-let receitas = JSON.parse(localStorage.getItem("receitas")||"[]");
+let precoUnitario = JSON.parse(localStorage.getItem("precoUnitario")) || {};
 
-// ---- Funções ----
+// Mostrar lista de ingredientes
 function mostrarLista(itens){
   listaUL.innerHTML = "";
   itens.forEach(item=>{
@@ -309,23 +340,28 @@ function mostrarLista(itens){
     listaUL.appendChild(li);
   });
 }
+mostrarLista(ingredientes);
 
 function filtrarLista(){
   const txt = document.getElementById("busca").value.toLowerCase();
   mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
 }
 
+// Adicionar item ao card
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome]=true;
+
   const card = document.createElement("div");
   card.className="card-item";
   card.dataset.nome=nome;
-  const preco = precosUnitarios[nome]||0;
+
+  const valorUnit = precoUnitario[nome] || 0;
+
   card.innerHTML=`
     <div class="card-header">${nome}</div>
     <div class="input-group">
-      <input type="number" placeholder="Custo" step="0.01" value="${preco}" oninput="calcular()">
+      <input type="number" placeholder="Custo" step="0.01" value="${valorUnit}" oninput="calcular(); salvarPreco('${nome}', this.value)">
       <input type="number" placeholder="Qtd" step="0.001" oninput="calcular()">
       <select onchange="calcular()">
         ${unidades.map(u=>`<option value="${u.value}">${u.label}</option>`).join("")}
@@ -337,8 +373,16 @@ function adicionarItem(nome){
   cardsContainer.appendChild(card);
   document.getElementById("busca").value="";
   mostrarLista(ingredientes);
+  calcular();
 }
 
+// Salvar preço unitário
+function salvarPreco(nome, valor){
+  precoUnitario[nome] = parseFloat(valor) || 0;
+  localStorage.setItem("precoUnitario", JSON.stringify(precoUnitario));
+}
+
+// Calcular custos
 function calcular(){
   let total=0;
   document.querySelectorAll(".card-item").forEach(card=>{
@@ -352,6 +396,7 @@ function calcular(){
   document.getElementById("total").textContent=total.toFixed(2);
 }
 
+// Remover item
 function removerItem(botao){
   const card=botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
@@ -360,96 +405,81 @@ function removerItem(botao){
   mostrarLista(ingredientes);
 }
 
-// ---- Preços Unitários ----
-function carregarPrecos(){
-  precosContainer.innerHTML = "";
-  ingredientes.forEach(i=>{
-    const div = document.createElement("div");
-    div.style.marginBottom="12px";
-    div.innerHTML=`<label>${i}: </label>
-    <input type="number" value="${precosUnitarios[i]||0}" step="0.01" onchange="salvarPreco('${i}', this.value)">`;
-    precosContainer.appendChild(div);
-  });
-}
-
-function salvarPreco(nome, valor){
-  precosUnitarios[nome] = parseFloat(valor) || 0;
-  localStorage.setItem("precosUnitarios", JSON.stringify(precosUnitarios));
-}
-
-// ---- Receitas ----
+// Salvar receita
 function salvarReceita(){
   const nome = document.getElementById("nomeReceita").value.trim();
-  if(!nome) return alert("Digite um nome para a receita");
+  if(!nome){ alert("Digite um nome para a receita."); return; }
+
   const receita = [];
   document.querySelectorAll(".card-item").forEach(card=>{
     const inputs = card.querySelectorAll("input[type=number]");
     const select = card.querySelector("select");
     receita.push({
       nome: card.dataset.nome,
-      preco: parseFloat(inputs[0].value)||0,
+      custo: parseFloat(inputs[0].value)||0,
       qtd: parseFloat(inputs[1].value)||0,
       unidade: select.value
     });
   });
-  receitas.push({nome, itens: receita});
-  localStorage.setItem("receitas", JSON.stringify(receitas));
-  alert("Receita salva!");
-  listarReceitas();
+
+  let todasReceitas = JSON.parse(localStorage.getItem("receitas")) || {};
+  todasReceitas[nome] = receita;
+  localStorage.setItem("receitas", JSON.stringify(todasReceitas));
+  document.getElementById("nomeReceita").value = "";
+  carregarReceitas();
+  alert("Receita salva com sucesso!");
 }
 
-function listarReceitas(){
-  receitasSalvasUL.innerHTML = "";
-  receitas.forEach((r,i)=>{
+// Carregar receitas salvas
+function carregarReceitas(){
+  const lista = document.getElementById("receitasSalvas");
+  lista.innerHTML = "";
+  const todasReceitas = JSON.parse(localStorage.getItem("receitas")) || {};
+  for(const nome in todasReceitas){
     const li = document.createElement("li");
-    li.style.cursor="pointer";
-    li.style.marginBottom="8px";
-    li.innerHTML = `<strong>${r.nome}</strong> <button onclick="carregarReceita(${i})" style="margin-left:10px;background:#43A047;color:white;border:none;padding:5px 8px;border-radius:8px;">Carregar</button>`;
-    receitasSalvasUL.appendChild(li);
-  });
+    li.textContent = nome;
+    const btn = document.createElement("button");
+    btn.textContent = "Excluir";
+    btn.onclick = ()=>{ excluirReceita(nome); };
+    li.appendChild(btn);
+    li.onclick = ()=>{ carregarReceita(nome); };
+    lista.appendChild(li);
+  }
 }
 
-function carregarReceita(index){
-  const receita = receitas[index];
-  cardsContainer.innerHTML="";
+// Carregar uma receita
+function carregarReceita(nome){
+  const todasReceitas = JSON.parse(localStorage.getItem("receitas")) || {};
+  const receita = todasReceitas[nome];
+  if(!receita) return;
+
+  // Limpar atual
+  cardsContainer.innerHTML = "";
   itensAdicionados = {};
-  receita.itens.forEach(item=>{
-    itensAdicionados[item.nome]=true;
-    const card = document.createElement("div");
-    card.className="card-item";
-    card.dataset.nome=item.nome;
-    card.innerHTML=`
-      <div class="card-header">${item.nome}</div>
-      <div class="input-group">
-        <input type="number" placeholder="Custo" step="0.01" value="${item.preco}" oninput="calcular()">
-        <input type="number" placeholder="Qtd" step="0.001" value="${item.qtd}" oninput="calcular()">
-        <select onchange="calcular()">
-          ${unidades.map(u=>`<option value="${u.value}" ${u.value===item.unidade?'selected':''}>${u.label}</option>`).join("")}
-        </select>
-        <div class="custo">R$ 0.00</div>
-        <button onclick="removerItem(this)">Remover</button>
-      </div>
-    `;
-    cardsContainer.appendChild(card);
+  receita.forEach(item=>{
+    adicionarItem(item.nome);
+    const card = [...cardsContainer.children].find(c=>c.dataset.nome===item.nome);
+    if(card){
+      const inputs = card.querySelectorAll("input[type=number]");
+      const select = card.querySelector("select");
+      inputs[0].value = item.custo;
+      inputs[1].value = item.qtd;
+      select.value = item.unidade;
+    }
   });
   calcular();
 }
 
-// ---- Tabs ----
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.onclick = ()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.tab).classList.add("active");
-    if(tab.dataset.tab==="precos") carregarPrecos();
-    if(tab.dataset.tab==="receitas") listarReceitas();
-  }
-});
+// Excluir receita
+function excluirReceita(nome){
+  let todasReceitas = JSON.parse(localStorage.getItem("receitas")) || {};
+  delete todasReceitas[nome];
+  localStorage.setItem("receitas", JSON.stringify(todasReceitas));
+  carregarReceitas();
+}
 
-// Inicialização
-mostrarLista(ingredientes);
+// Inicializar
+carregarReceitas();
 </script>
-</div>
 </body>
 </html>
