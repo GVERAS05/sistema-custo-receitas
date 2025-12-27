@@ -264,9 +264,11 @@ const unidades = [
 
 const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
-let itensAdicionados = JSON.parse(localStorage.getItem("itensAdicionados")) || {};
+let itensAdicionados = {};
 
-// Mostrar lista filtrada
+// Histórico de preços no localStorage
+let historicoPrecos = JSON.parse(localStorage.getItem("historicoPrecos")) || {};
+
 function mostrarLista(itens){
   listaUL.innerHTML = "";
   itens.forEach(item=>{
@@ -278,83 +280,68 @@ function mostrarLista(itens){
   });
 }
 
-// Filtrar lista
+mostrarLista(ingredientes);
+
 function filtrarLista(){
   const txt = document.getElementById("busca").value.toLowerCase();
   mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
 }
 
-// Adicionar item
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
-  itensAdicionados[nome] = {
-    custo: 0,
-    qtd: 0,
-    unidade: "un"
-  };
-  localStorage.setItem("itensAdicionados", JSON.stringify(itensAdicionados));
-  criarCard(nome);
-  document.getElementById("busca").value="";
-  mostrarLista(ingredientes);
-  calcular();
-}
+  itensAdicionados[nome]=true;
 
-// Criar card
-function criarCard(nome){
-  const data = itensAdicionados[nome];
   const card = document.createElement("div");
   card.className="card-item";
   card.dataset.nome=nome;
+
+  // Pré-preencher com histórico
+  const historico = historicoPrecos[nome] || { custo: "", qtd: "", unidade: "un" };
+
   card.innerHTML=`
     <div class="card-header">${nome}</div>
     <div class="input-group">
-      <input type="number" placeholder="Custo" step="0.01" value="${data.custo}" onchange="atualizarItem('${nome}','custo',this.value)">
-      <input type="number" placeholder="Qtd" step="0.001" value="${data.qtd}" onchange="atualizarItem('${nome}','qtd',this.value)">
-      <select onchange="atualizarItem('${nome}','unidade',this.value)">
-        ${unidades.map(u=>`<option value="${u.value}" ${u.value===data.unidade?'selected':''}>${u.label}</option>`).join("")}
+      <input type="number" placeholder="Custo" step="0.01" value="${historico.custo}" oninput="calcular()">
+      <input type="number" placeholder="Qtd" step="0.001" value="${historico.qtd}" oninput="calcular()">
+      <select onchange="calcular()">
+        ${unidades.map(u=>`<option value="${u.value}" ${u.value===historico.unidade?'selected':''}>${u.label}</option>`).join("")}
       </select>
       <div class="custo">R$ 0.00</div>
       <button onclick="removerItem(this)">Remover</button>
     </div>
   `;
   cardsContainer.appendChild(card);
-}
-
-// Atualizar item
-function atualizarItem(nome, campo, valor){
-  itensAdicionados[nome][campo] = parseFloat(valor) || valor;
-  localStorage.setItem("itensAdicionados", JSON.stringify(itensAdicionados));
+  document.getElementById("busca").value="";
+  mostrarLista(ingredientes);
   calcular();
 }
 
-// Remover item
+function calcular(){
+  let total=0;
+  document.querySelectorAll(".card-item").forEach(card=>{
+    const inputs=card.querySelectorAll("input[type=number]");
+    const select = card.querySelector("select");
+    const custo=parseFloat(inputs[0].value)||0;
+    const qtd=parseFloat(inputs[1].value)||0;
+    const unidade = select.value;
+    const subtotal=custo*qtd;
+    card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
+    total+=subtotal;
+
+    // Salvar histórico
+    historicoPrecos[card.dataset.nome] = { custo, qtd, unidade };
+  });
+  document.getElementById("total").textContent=total.toFixed(2);
+  localStorage.setItem("historicoPrecos", JSON.stringify(historicoPrecos));
+}
+
 function removerItem(botao){
-  const card = botao.closest(".card-item");
+  const card=botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
-  localStorage.setItem("itensAdicionados", JSON.stringify(itensAdicionados));
   card.remove();
   calcular();
   mostrarLista(ingredientes);
 }
-
-// Calcular total
-function calcular(){
-  let total=0;
-  document.querySelectorAll(".card-item").forEach(card=>{
-    const inputs = card.querySelectorAll("input[type=number]");
-    const custo = parseFloat(inputs[0].value) || 0;
-    const qtd = parseFloat(inputs[1].value) || 0;
-    const subtotal = custo*qtd;
-    card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
-    total+=subtotal;
-  });
-  document.getElementById("total").textContent=total.toFixed(2);
-}
-
-// Inicializar cards existentes do localStorage
-Object.keys(itensAdicionados).forEach(criarCard);
-calcular();
-mostrarLista(ingredientes);
 </script>
 </body>
 </html>
