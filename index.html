@@ -13,12 +13,37 @@ th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
 #listaItens li:hover { background: #eee; }
 button { cursor: pointer; }
 .total { font-weight: bold; font-size: 18px; margin-top: 10px; }
+
+/* Lupa dentro do input */
+.input-lupa {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.input-lupa input {
+  width: 100%;
+  padding-left: 30px; /* espaço para a lupa */
+  box-sizing: border-box;
+}
+
+.input-lupa::before {
+  content: "🔍"; /* emoji de lupa */
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  pointer-events: none; /* não bloqueia digitação */
+  font-size: 16px;
+}
 </style>
 </head>
+
 <body>
 
 <h2>Buscar item (lupa)</h2>
-<input type="text" id="busca" placeholder="Digite para buscar..." onkeyup="filtrarLista()">
+<div class="input-lupa">
+  <input type="text" id="busca" placeholder="Digite para buscar..." onkeyup="filtrarLista()">
+</div>
 <ul id="listaItens"></ul>
 
 <h2>Receita</h2>
@@ -119,7 +144,7 @@ function adicionarItem(nome){
 
   tabelaItens.appendChild(tr);
 
-  // Atualizar lista
+  // Atualizar lista e limpar busca
   document.getElementById("busca").value = "";
   mostrarLista(ingredientes);
 }
