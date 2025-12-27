@@ -21,17 +21,16 @@ body {
   padding: 25px 20px;
 }
 
-/* ===== Cabeçalho ===== */
+/* ===== Cabeçalho e abas ===== */
 header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 15px;
   margin-bottom: 25px;
-  flex-wrap: wrap;
 }
 
 header h1 {
-  font-size: 36px;
+  font-size: 42px;
   color: #1E88E5;
   letter-spacing: 0.5px;
   margin-bottom: 10px;
@@ -39,31 +38,39 @@ header h1 {
 
 .tabs {
   display: flex;
-  gap: 12px;
-  margin-bottom: 25px;
+  gap: 15px;
 }
 
-.tab-btn {
-  padding: 10px 18px;
-  border-radius: 15px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
+.tab {
+  padding: 10px 20px;
   background: #FCFCFC;
-  border: 2px solid #E0E0E0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.tab-btn.active {
+.tab.active {
   background: #1E88E5;
   color: white;
-  border-color: #1E88E5;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+/* ===== Seções ===== */
+.section {
+  display: none;
+}
+.section.active {
+  display: block;
 }
 
 /* ===== Search ===== */
 .search-container {
   position: relative;
-  width: 300px;
+  width: 100%;
+  max-width: 350px;
+  margin-bottom: 15px;
 }
 
 .search-container input {
@@ -92,7 +99,7 @@ header h1 {
   opacity: 0.7;
 }
 
-/* ===== Lista Ingredientes ===== */
+/* ===== Dropdown lista ===== */
 #listaItens {
   border: 2px solid #E0E0E0;
   border-radius: 25px;
@@ -100,13 +107,13 @@ header h1 {
   overflow-y: auto;
   background: #FCFCFC;
   padding: 0;
-  margin: 0 0 20px 0;
-  list-style: none;
-  position: relative;
+  margin: 0 0 30px 0;
   z-index: 10;
+  position: relative;
 }
 
 #listaItens li {
+  list-style: none;
   padding: 12px 20px;
   cursor: pointer;
   border-bottom: 1px solid #BDBDBD;
@@ -119,13 +126,14 @@ header h1 {
   font-weight: 600;
 }
 
-/* ===== Cards ===== */
+/* ===== Grid de cards ===== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
+/* ===== Card individual ===== */
 .card-item {
   background: #FCFCFC;
   border-radius: 20px;
@@ -214,25 +222,15 @@ header h1 {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* ===== Animações ===== */
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* ===== Responsivo ===== */
 @media(max-width: 750px){
   .cards-grid {
     grid-template-columns: 1fr;
   }
-  header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
+  header .tabs {
+    flex-wrap: wrap;
   }
-  header .search-container {
+  .search-container {
     width: 100%;
   }
 }
@@ -243,38 +241,57 @@ header h1 {
 <header>
 <h1>Calculadora de Custos Premium</h1>
 <div class="tabs">
-  <button class="tab-btn active" onclick="abrirAba('ingredientes')">Ingredientes</button>
-  <button class="tab-btn" onclick="abrirAba('precos')">Preços Unitários</button>
-  <button class="tab-btn" onclick="abrirAba('receitas')">Receitas</button>
-</div>
-<div class="search-container" id="searchContainer">
-  <input type="text" id="busca" placeholder="Pesquisar ingrediente..." onkeyup="filtrarLista()">
-  <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
+  <div class="tab active" onclick="abrirAba('calculadora')">Calculadora</div>
+  <div class="tab" onclick="abrirAba('precos')">Preços Unitários</div>
+  <div class="tab" onclick="abrirAba('receitas')">Receitas Salvas</div>
 </div>
 </header>
 
-<!-- Abas -->
-<div id="ingredientes" class="aba" style="display:block;">
+<!-- Seção Calculadora -->
+<div class="section active" id="calculadora">
+  <div class="search-container">
+    <input type="text" id="busca" placeholder="Pesquisar ingrediente..." onkeyup="filtrarLista()">
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
+  </div>
   <ul id="listaItens"></ul>
   <div class="cards-grid" id="cardsContainer"></div>
   <p class="total">Custo total: R$ <span id="total">0.00</span></p>
 </div>
 
-<div id="precos" class="aba" style="display:none;">
-  <h2>Alterar preços unitários</h2>
-  <div class="cards-grid" id="precosContainer"></div>
+<!-- Seção Preços Unitários -->
+<div class="section" id="precos">
+  <div class="table-container">
+    <table id="tabelaPrecos">
+      <thead>
+        <tr>
+          <th>Ingrediente</th>
+          <th>Preço Unitário</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>
-
-<div id="receitas" class="aba" style="display:none;">
-  <h2>Receitas Salvas</h2>
-  <input type="text" id="nomeReceita" placeholder="Nome da receita..." style="padding:10px; border-radius:12px; border:2px solid #E0E0E0; margin-bottom:10px;">
-  <button onclick="salvarReceita()" style="padding:10px 15px; border-radius:12px; background:#43A047; color:white; border:none; cursor:pointer;">Salvar Receita</button>
-  <ul id="receitasSalvas"></ul>
+<!-- Seção Receitas Salvas -->
+<div class="section" id="receitas">
+  <div class="table-container">
+    <input type="text" id="nomeReceita" placeholder="Nome da receita" style="margin-bottom:10px; padding:10px; width:100%; border-radius:12px; border:2px solid #E0E0E0;">
+    <button onclick="salvarReceita()" style="background:#43A047; color:white; border:none; border-radius:12px; padding:10px 20px; cursor:pointer; margin-bottom:15px;">Salvar Receita</button>
+    <table id="tabelaReceitas">
+      <thead>
+        <tr>
+          <th>Nome da Receita</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 </div>
-</div>
+</div> <!-- container -->
 
 <script>
-// ===== Dados =====
+// ===== Ingredientes e unidades =====
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
@@ -305,23 +322,88 @@ const unidades = [
   { label: "Mililitro (ml)", value: "ml" }
 ];
 
-let itensAdicionados = {};
-let precosUnitarios = JSON.parse(localStorage.getItem("precosUnitarios")) || {};
-let receitas = JSON.parse(localStorage.getItem("receitas")) || {};
-
-// ===== Funções de abas =====
-function abrirAba(id){
-  document.querySelectorAll(".aba").forEach(a => a.style.display="none");
-  document.getElementById(id).style.display="block";
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-  event.currentTarget.classList.add("active");
-  if(id==="precos") mostrarPrecos();
-  if(id==="receitas") mostrarReceitasSalvas();
+// ===== Tabs =====
+function abrirAba(aba) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.tab[onclick="abrirAba('${aba}')"]`).classList.add('active');
+  document.getElementById(aba).classList.add('active');
 }
 
-// ===== Ingredientes =====
+// ===== LocalStorage para preços =====
+let precosUnitarios = JSON.parse(localStorage.getItem('precosUnitarios')) || {};
+
+// ===== Preencher tabela de preços =====
+function preencherTabelaPrecos() {
+  const tbody = document.querySelector("#tabelaPrecos tbody");
+  tbody.innerHTML = '';
+  ingredientes.forEach(ing => {
+    const tr = document.createElement('tr');
+    const preco = precosUnitarios[ing] || 0;
+    tr.innerHTML = `<td>${ing}</td>
+                    <td><input type="number" min="0" step="0.01" value="${preco}" onchange="alterarPreco('${ing}', this.value)"></td>`;
+    tbody.appendChild(tr);
+  });
+}
+function alterarPreco(nome, valor) {
+  precosUnitarios[nome] = parseFloat(valor);
+  localStorage.setItem('precosUnitarios', JSON.stringify(precosUnitarios));
+}
+
+// ===== Receitas =====
+let receitas = JSON.parse(localStorage.getItem('receitas')) || [];
+
+function salvarReceita() {
+  const nome = document.getElementById('nomeReceita').value.trim();
+  if(!nome) { alert("Digite um nome para a receita"); return; }
+  const receita = [];
+  document.querySelectorAll('#cardsContainer .card-item').forEach(card=>{
+    const nomeItem = card.dataset.nome;
+    const custoUnit = precosUnitarios[nomeItem] || 0;
+    const qtd = parseFloat(card.querySelectorAll('input[type=number]')[1].value)||0;
+    const unidade = card.querySelector('select').value;
+    receita.push({nome:nomeItem,custoUnit,qtd,unidade});
+  });
+  receitas.push({nome, itens:receita});
+  localStorage.setItem('receitas', JSON.stringify(receitas));
+  document.getElementById('nomeReceita').value = '';
+  atualizarTabelaReceitas();
+  alert("Receita salva com sucesso!");
+}
+
+function atualizarTabelaReceitas() {
+  const tbody = document.querySelector("#tabelaReceitas tbody");
+  tbody.innerHTML = '';
+  receitas.forEach((r,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.nome}</td>
+                    <td><button onclick="abrirReceita(${i})">Abrir</button>
+                        <button onclick="excluirReceita(${i})" style="background:#E53935;">Excluir</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function abrirReceita(index) {
+  const r = receitas[index];
+  document.getElementById('cardsContainer').innerHTML = '';
+  itensAdicionados = {};
+  r.itens.forEach(item=>{
+    adicionarItem(item.nome, item.qtd, item.custoUnit, item.unidade);
+  });
+  abrirAba('calculadora');
+}
+
+function excluirReceita(index) {
+  if(!confirm("Deseja realmente excluir essa receita?")) return;
+  receitas.splice(index,1);
+  localStorage.setItem('receitas', JSON.stringify(receitas));
+  atualizarTabelaReceitas();
+}
+
+// ===== Calculadora =====
 const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
+let itensAdicionados = {};
 
 function mostrarLista(itens){
   listaUL.innerHTML = "";
@@ -341,7 +423,7 @@ function filtrarLista(){
   mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
 }
 
-function adicionarItem(nome){
+function adicionarItem(nome, qtd=0, precoUnit=0, unidade="un"){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome]=true;
 
@@ -349,13 +431,15 @@ function adicionarItem(nome){
   card.className="card-item";
   card.dataset.nome=nome;
 
+  const precoAtual = precosUnitarios[nome] || precoUnit;
+
   card.innerHTML=`
     <div class="card-header">${nome}</div>
     <div class="input-group">
-      <input type="number" placeholder="Custo" value="${precosUnitarios[nome]||''}" step="0.01" oninput="calcular()">
-      <input type="number" placeholder="Qtd" step="0.001" oninput="calcular()">
+      <input type="number" placeholder="Custo Unitário" step="0.01" value="${precoAtual}" onchange="alterarPreco('${nome}', this.value); calcular();">
+      <input type="number" placeholder="Qtd" step="0.001" value="${qtd}" oninput="calcular()">
       <select onchange="calcular()">
-        ${unidades.map(u=>`<option value="${u.value}">${u.label}</option>`).join("")}
+        ${unidades.map(u=>`<option value="${u.value}" ${u.value===unidade?'selected':''}>${u.label}</option>`).join("")}
       </select>
       <div class="custo">R$ 0.00</div>
       <button onclick="removerItem(this)">Remover</button>
@@ -364,6 +448,7 @@ function adicionarItem(nome){
   cardsContainer.appendChild(card);
   document.getElementById("busca").value="";
   mostrarLista(ingredientes);
+  calcular();
 }
 
 function calcular(){
@@ -375,9 +460,6 @@ function calcular(){
     const subtotal=custo*qtd;
     card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
     total+=subtotal;
-    // Salva o preço unitário
-    precosUnitarios[card.dataset.nome] = custo;
-    localStorage.setItem("precosUnitarios", JSON.stringify(precosUnitarios));
   });
   document.getElementById("total").textContent=total.toFixed(2);
 }
@@ -390,76 +472,9 @@ function removerItem(botao){
   mostrarLista(ingredientes);
 }
 
-// ===== Preços Unitários =====
-const precosContainer = document.getElementById("precosContainer");
-
-function mostrarPrecos(){
-  precosContainer.innerHTML="";
-  ingredientes.forEach(nome=>{
-    const card = document.createElement("div");
-    card.className="card-item";
-    card.dataset.nome=nome;
-    card.innerHTML=`
-      <div class="card-header">${nome}</div>
-      <div class="input-group">
-        <input type="number" placeholder="Preço unitário" value="${precosUnitarios[nome]||''}" step="0.01" oninput="alterarPreco('${nome}', this.value)">
-      </div>
-    `;
-    precosContainer.appendChild(card);
-  });
-}
-
-function alterarPreco(nome, valor){
-  precosUnitarios[nome] = parseFloat(valor) || 0;
-  localStorage.setItem("precosUnitarios", JSON.stringify(precosUnitarios));
-}
-
-// ===== Receitas =====
-function salvarReceita(){
-  const nome = document.getElementById("nomeReceita").value.trim();
-  if(!nome){
-    alert("Digite o nome da receita!");
-    return;
-  }
-  const receita = [];
-  document.querySelectorAll(".card-item").forEach(card=>{
-    const inputs=card.querySelectorAll("input[type=number]");
-    const qtd=parseFloat(inputs[1].value)||0;
-    receita.push({nome: card.dataset.nome, qtd});
-  });
-  receitas[nome]=receita;
-  localStorage.setItem("receitas", JSON.stringify(receitas));
-  document.getElementById("nomeReceita").value="";
-  mostrarReceitasSalvas();
-  alert("Receita salva!");
-}
-
-function mostrarReceitasSalvas(){
-  const ul = document.getElementById("receitasSalvas");
-  ul.innerHTML="";
-  Object.keys(receitas).forEach(nome=>{
-    const li = document.createElement("li");
-    li.textContent=nome;
-    li.style.cursor="pointer";
-    li.onclick=()=>carregarReceita(nome);
-    ul.appendChild(li);
-  });
-}
-
-function carregarReceita(nome){
-  itensAdicionados={};
-  cardsContainer.innerHTML="";
-  const receita = receitas[nome];
-  receita.forEach(item=>{
-    adicionarItem(item.nome);
-    const card = document.querySelector(`.card-item[data-nome='${item.nome}']`);
-    card.querySelectorAll("input[type=number]")[1].value = item.qtd;
-  });
-  calcular();
-}
-
-// Inicializa abas
-abrirAba("ingredientes");
+// ===== Inicializações =====
+preencherTabelaPrecos();
+atualizarTabelaReceitas();
 </script>
 </body>
 </html>
