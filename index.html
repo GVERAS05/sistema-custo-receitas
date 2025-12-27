@@ -3,20 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <title>Calculadora de Custos da Receita</title>
-
 <style>
 body { font-family: Arial; padding: 20px; }
 input, select, button { padding: 4px; margin: 2px; }
 table { border-collapse: collapse; width: 100%; margin-top: 10px; }
 th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-ul { border: 1px solid #ccc; max-height: 200px; overflow-y: auto; padding: 0; margin-top: 5px; }
-li { list-style: none; padding: 6px; cursor: pointer; }
-li:hover { background: #eee; }
+#listaItens { border: 1px solid #ccc; max-height: 250px; overflow-y: auto; padding: 0; margin-top: 5px; }
+#listaItens li { list-style: none; padding: 6px; cursor: pointer; }
+#listaItens li:hover { background: #eee; }
 button { cursor: pointer; }
 .total { font-weight: bold; font-size: 18px; margin-top: 10px; }
 </style>
 </head>
-
 <body>
 
 <h2>Buscar item (lupa)</h2>
@@ -73,7 +71,7 @@ const unidades = [
   { label: "Mililitro (ml)", value: "ml" }
 ];
 
-// ===== POPULAR LISTA INICIAL =====
+// ===== POPULAR LISTA =====
 const listaUL = document.getElementById("listaItens");
 const tabelaItens = document.getElementById("tabelaItens");
 let itensAdicionados = {};
@@ -81,6 +79,7 @@ let itensAdicionados = {};
 function mostrarLista(itens) {
   listaUL.innerHTML = "";
   itens.forEach(item => {
+    if(itensAdicionados[item]) return; // não mostrar já adicionados
     const li = document.createElement("li");
     li.textContent = item;
     li.onclick = () => adicionarItem(item);
@@ -99,7 +98,7 @@ function filtrarLista() {
 
 // ===== ADICIONAR ITEM =====
 function adicionarItem(nome){
-  if(itensAdicionados[nome]) return; // só uma vez
+  if(itensAdicionados[nome]) return;
   itensAdicionados[nome] = true;
 
   const tr = document.createElement("tr");
@@ -120,9 +119,9 @@ function adicionarItem(nome){
 
   tabelaItens.appendChild(tr);
 
-  // Limpar pesquisa e lista
+  // Atualizar lista
   document.getElementById("busca").value = "";
-  mostrarLista(ingredientes.filter(i => !itensAdicionados[i]));
+  mostrarLista(ingredientes);
 }
 
 // ===== CALCULAR =====
@@ -144,6 +143,7 @@ function removerItem(botao){
   delete itensAdicionados[tr.dataset.nome];
   tr.remove();
   calcular();
+  mostrarLista(ingredientes);
 }
 </script>
 
