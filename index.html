@@ -27,21 +27,39 @@ header {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 35px;
-  flex-wrap: wrap;
 }
 
 header h1 {
   font-size: 42px;
   color: #1E88E5;
   letter-spacing: 0.5px;
-  flex: 1 1 100%;
-  margin-bottom: 20px;
 }
 
+header .tabs {
+  display: flex;
+  gap: 15px;
+}
+
+header .tabs button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 600;
+  background: #E0E0E0;
+  color: #212121;
+  transition: all 0.3s;
+}
+
+header .tabs button.active {
+  background: #1E88E5;
+  color: #FCFCFC;
+}
+
+/* ===== Search ===== */
 header .search-container {
   position: relative;
   width: 300px;
-  flex: 1 1 auto;
 }
 
 header .search-container input {
@@ -70,7 +88,7 @@ header .search-container img {
   opacity: 0.7;
 }
 
-/* ===== Lista dropdown ===== */
+/* ===== Dropdown lista ===== */
 #listaItens {
   border: 2px solid #E0E0E0;
   border-radius: 25px;
@@ -79,6 +97,7 @@ header .search-container img {
   background: #FCFCFC;
   padding: 0;
   margin: 0 0 30px 0;
+  position: relative;
   z-index: 10;
 }
 
@@ -137,7 +156,7 @@ header .search-container img {
   margin-bottom: 10px;
 }
 
-.card-item input[type=number], .card-item select {
+.card-item input[type=number], .card-item select, .card-item input[type=text] {
   padding: 10px;
   border-radius: 12px;
   border: 2px solid #E0E0E0;
@@ -148,7 +167,9 @@ header .search-container img {
   text-align: center;
 }
 
-.card-item input[type=number]:focus, .card-item select:focus {
+.card-item input[type=number]:focus, 
+.card-item select:focus, 
+.card-item input[type=text]:focus {
   border-color: #1E88E5;
   box-shadow: 0 0 12px rgba(30,136,229,0.25);
   outline: none;
@@ -192,90 +213,6 @@ header .search-container img {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* ===== Receita ===== */
-.receita-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.receita-container input[type=text] {
-  flex: 1 1 200px;
-  padding: 12px;
-  border-radius: 20px;
-  border: 2px solid #E0E0E0;
-  font-size: 16px;
-  transition: all 0.3s;
-}
-
-.receita-container input[type=text]:focus {
-  border-color: #1E88E5;
-  box-shadow: 0 0 12px rgba(30,136,229,0.25);
-  outline: none;
-}
-
-.receita-container button {
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: none;
-  background: #43A047;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.receita-container button:hover {
-  background: #388E3C;
-  transform: scale(1.03);
-}
-
-/* ===== Aba de receitas salvas ===== */
-#receitasSalvas {
-  margin-top: 40px;
-  padding: 20px;
-  background: #FCFCFC;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-}
-
-#receitasSalvas h2 {
-  margin-top: 0;
-  color: #1E88E5;
-}
-
-#receitasSalvas ul {
-  list-style: none;
-  padding: 0;
-}
-
-#receitasSalvas li {
-  padding: 10px;
-  border-bottom: 1px solid #BDBDBD;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#receitasSalvas li:last-child {
-  border-bottom: none;
-}
-
-#receitasSalvas button {
-  background: #FB8C00;
-  padding: 6px 12px;
-  border-radius: 12px;
-  border: none;
-  color: white;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-#receitasSalvas button:hover {
-  background: #F57C00;
-}
-
 /* ===== Animações ===== */
 @keyframes fadeIn {
   to {
@@ -304,28 +241,31 @@ header .search-container img {
 <div class="container">
 <header>
 <h1>Calculadora de Custos Premium</h1>
-<div class="search-container">
+<div class="tabs">
+  <button class="tab-btn active" onclick="mostrarAba('receita')">Receita</button>
+  <button class="tab-btn" onclick="mostrarAba('precos')">Preços Unitários</button>
+</div>
+<div class="search-container" id="search-container">
   <input type="text" id="busca" placeholder="Pesquisar ingrediente..." onkeyup="filtrarLista()">
   <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
 </div>
 </header>
 
-<!-- Nome da receita e salvar -->
-<div class="receita-container">
-  <input type="text" id="nomeReceita" placeholder="Nome da receita...">
-  <button onclick="salvarReceita()">Salvar Receita</button>
-</div>
-
+<!-- Lista de itens para receita -->
 <ul id="listaItens"></ul>
+
+<!-- Grid de cards da receita -->
 <div class="cards-grid" id="cardsContainer"></div>
 
-<p class="total">Custo total: R$ <span id="total">0.00</span></p>
+<!-- Total da receita -->
+<p class="total" id="total-container">Custo total: R$ <span id="total">0.00</span></p>
 
-<!-- Receitas salvas -->
-<div id="receitasSalvas">
-<h2>Receitas Salvas</h2>
-<ul id="listaReceitas"></ul>
+<!-- Aba de preços unitários -->
+<div id="precosAba" style="display:none;">
+  <h2>Preços Unitários</h2>
+  <div class="cards-grid" id="precosContainer"></div>
 </div>
+
 </div>
 
 <script>
@@ -363,17 +303,11 @@ const unidades = [
 // ===== Elementos =====
 const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
-const listaReceitas = document.getElementById("listaReceitas");
+const precosContainer = document.getElementById("precosContainer");
+const searchContainer = document.getElementById("search-container");
 let itensAdicionados = {};
 
-// ===== Inicialização =====
-function init(){
-  mostrarLista(ingredientes);
-  mostrarReceitas();
-}
-window.addEventListener("load", init);
-
-// ===== Lista de ingredientes =====
+// ===== Funções =====
 function mostrarLista(itens){
   listaUL.innerHTML = "";
   itens.forEach(item=>{
@@ -390,17 +324,16 @@ function filtrarLista(){
   mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
 }
 
-// ===== Adicionar item =====
+// Adicionar ingrediente à receita
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
   itensAdicionados[nome]=true;
 
+  const precoUnitario = localStorage.getItem(`preco_${nome}`) || "";
+
   const card = document.createElement("div");
   card.className="card-item";
   card.dataset.nome=nome;
-
-  // Recupera preço unitário salvo no localStorage
-  let precoUnitario = localStorage.getItem(`preco_${nome}`) || "";
 
   card.innerHTML=`
     <div class="card-header">${nome}</div>
@@ -417,16 +350,24 @@ function adicionarItem(nome){
   cardsContainer.appendChild(card);
   document.getElementById("busca").value="";
   mostrarLista(ingredientes);
-  calcular();
 }
 
-// ===== Atualizar preço unitário =====
+// Atualizar preço unitário e salvar
 function atualizarPreco(nome, valor){
   localStorage.setItem(`preco_${nome}`, valor);
   calcular();
 }
 
-// ===== Calcular total =====
+// Remover item da receita
+function removerItem(botao){
+  const card=botao.closest(".card-item");
+  delete itensAdicionados[card.dataset.nome];
+  card.remove();
+  calcular();
+  mostrarLista(ingredientes);
+}
+
+// Calcular total
 function calcular(){
   let total=0;
   document.querySelectorAll(".card-item").forEach(card=>{
@@ -440,63 +381,48 @@ function calcular(){
   document.getElementById("total").textContent=total.toFixed(2);
 }
 
-// ===== Remover item =====
-function removerItem(botao){
-  const card=botao.closest(".card-item");
-  delete itensAdicionados[card.dataset.nome];
-  card.remove();
-  calcular();
-  mostrarLista(ingredientes);
+// ===== Aba Preços =====
+function mostrarAba(aba){
+  const tabs = document.querySelectorAll(".tab-btn");
+  tabs.forEach(t=>t.classList.remove("active"));
+
+  if(aba==='receita'){
+    document.getElementById("cardsContainer").style.display="grid";
+    document.getElementById("listaItens").style.display="block";
+    searchContainer.style.display="block";
+    document.getElementById("total-container").style.display="block";
+    document.getElementById("precosAba").style.display="none";
+    tabs[0].classList.add("active");
+  } else {
+    document.getElementById("cardsContainer").style.display="none";
+    document.getElementById("listaItens").style.display="none";
+    searchContainer.style.display="none";
+    document.getElementById("total-container").style.display="none";
+    document.getElementById("precosAba").style.display="block";
+    tabs[1].classList.add("active");
+    mostrarPrecos();
+  }
 }
 
-// ===== Receitas =====
-function salvarReceita(){
-  const nome = document.getElementById("nomeReceita").value.trim();
-  if(!nome) return alert("Digite um nome para a receita.");
-  let itens = [];
-  document.querySelectorAll(".card-item").forEach(card=>{
-    const nomeItem = card.dataset.nome;
-    const custo = parseFloat(card.querySelector("input[type=number]").value) || 0;
-    const qtd = parseFloat(card.querySelectorAll("input[type=number]")[1].value) || 0;
-    const unidade = card.querySelector("select").value;
-    itens.push({nome: nomeItem, custo, qtd, unidade});
+// Mostrar preços unitários na aba
+function mostrarPrecos(){
+  precosContainer.innerHTML="";
+  ingredientes.forEach(nome=>{
+    const precoUnitario = localStorage.getItem(`preco_${nome}`) || "";
+    const card = document.createElement("div");
+    card.className="card-item";
+    card.innerHTML=`
+      <div class="card-header">${nome}</div>
+      <div class="input-group">
+        <input type="number" placeholder="Custo Unitário" step="0.01" value="${precoUnitario}" oninput="atualizarPreco('${nome}', this.value)">
+      </div>
+    `;
+    precosContainer.appendChild(card);
   });
-  let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
-  receitas.push({nome, itens});
-  localStorage.setItem("receitas", JSON.stringify(receitas));
-  document.getElementById("nomeReceita").value="";
-  mostrarReceitas();
-  alert("Receita salva com sucesso!");
 }
 
-function mostrarReceitas(){
-  listaReceitas.innerHTML="";
-  let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
-  receitas.forEach((r,i)=>{
-    const li = document.createElement("li");
-    li.innerHTML=`${r.nome} <button onclick="carregarReceita(${i})">Abrir</button>`;
-    listaReceitas.appendChild(li);
-  });
-}
-
-function carregarReceita(index){
-  // Limpa os itens atuais
-  cardsContainer.innerHTML="";
-  itensAdicionados={};
-  let receitas = JSON.parse(localStorage.getItem("receitas")) || [];
-  let r = receitas[index];
-  r.itens.forEach(item=>{
-    adicionarItem(item.nome);
-    let card = Array.from(cardsContainer.children).find(c=>c.dataset.nome===item.nome);
-    if(card){
-      card.querySelector("input[type=number]").value = item.custo;
-      card.querySelectorAll("input[type=number]")[1].value = item.qtd;
-      card.querySelector("select").value = item.unidade;
-    }
-  });
-  calcular();
-}
-
+// Inicialização
+mostrarLista(ingredientes);
 </script>
 </body>
 </html>
