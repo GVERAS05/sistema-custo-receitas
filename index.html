@@ -26,55 +26,21 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 }
 
 header h1 {
-  font-size: 36px;
+  font-size: 42px;
   color: #1E88E5;
   letter-spacing: 0.5px;
-  margin: 0;
 }
 
-/* ===== Abas ===== */
-.tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.tab {
-  padding: 10px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  background: #FCFCFC;
-  border: 2px solid #E0E0E0;
-  transition: all 0.3s;
-}
-
-.tab.active {
-  background: #1E88E5;
-  color: #fff;
-  font-weight: 600;
-}
-
-/* ===== Conteúdo das abas ===== */
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-/* ===== Search ===== */
-.search-container {
+header .search-container {
   position: relative;
   width: 300px;
 }
 
-.search-container input {
+header .search-container input {
   width: 100%;
   padding: 12px 45px 12px 18px;
   border-radius: 25px;
@@ -84,13 +50,13 @@ header h1 {
   background: #FCFCFC;
 }
 
-.search-container input:focus {
+header .search-container input:focus {
   border-color: #1E88E5;
   box-shadow: 0 0 15px rgba(30,136,229,0.2);
   outline: none;
 }
 
-.search-container img {
+header .search-container img {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -108,12 +74,13 @@ header h1 {
   overflow-y: auto;
   background: #FCFCFC;
   padding: 0;
-  margin: 0 0 20px 0;
-  list-style: none;
+  margin: 0 0 30px 0;
+  position: relative;
   z-index: 10;
 }
 
 #listaItens li {
+  list-style: none;
   padding: 12px 20px;
   cursor: pointer;
   border-bottom: 1px solid #BDBDBD;
@@ -222,52 +189,6 @@ header h1 {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-/* ===== Tabela preços unitários ===== */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #FCFCFC;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-th, td {
-  padding: 12px 15px;
-  text-align: left;
-}
-
-th {
-  background: #1E88E5;
-  color: white;
-}
-
-td input[type=number] {
-  width: 100px;
-}
-
-/* ===== Lista receitas ===== */
-#receitasList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#receitasList li {
-  padding: 12px 20px;
-  margin-bottom: 10px;
-  background: #FCFCFC;
-  border-radius: 15px;
-  cursor: pointer;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-  transition: all 0.3s;
-}
-
-#receitasList li:hover {
-  background: #1E88E5;
-  color: white;
-}
-
 /* ===== Animações ===== */
 @keyframes fadeIn {
   to {
@@ -289,9 +210,6 @@ td input[type=number] {
   header .search-container {
     width: 100%;
   }
-  .tabs {
-    flex-wrap: wrap;
-  }
 }
 </style>
 </head>
@@ -299,217 +217,24 @@ td input[type=number] {
 <div class="container">
 <header>
 <h1>Calculadora de Custos Premium</h1>
-<div class="search-container" id="searchContainer">
+<div class="search-container">
   <input type="text" id="busca" placeholder="Pesquisar ingrediente..." onkeyup="filtrarLista()">
   <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
 </div>
 </header>
 
-<div class="tabs">
-  <div class="tab active" data-tab="ingredientesTab">Ingredientes</div>
-  <div class="tab" data-tab="precosTab">Preços Unitários</div>
-  <div class="tab" data-tab="receitasTab">Receitas</div>
+<!-- Lista de ingredientes filtráveis -->
+<ul id="listaItens"></ul>
+
+<!-- Cards de ingredientes adicionados -->
+<div class="cards-grid" id="cardsContainer"></div>
+
+<!-- Total -->
+<p class="total">Custo total: R$ <span id="total">0.00</span></p>
 </div>
 
-<!-- Aba Ingredientes -->
-<div class="tab-content active" id="ingredientesTab">
-  <ul id="listaItens"></ul>
-  <div class="cards-grid" id="cardsContainer"></div>
-  <p class="total">Custo total: R$ <span id="total">0.00</span></p>
-</div>
-
-<!-- Aba Preços Unitários -->
-<div class="tab-content" id="precosTab">
-  <table>
-    <thead>
-      <tr>
-        <th>Ingrediente</th>
-        <th>Preço Unitário (R$)</th>
-      </tr>
-    </thead>
-    <tbody id="precosTabela"></tbody>
-  </table>
-</div>
-
-<!-- Aba Receitas -->
-<div class="tab-content" id="receitasTab">
-  <input type="text" id="nomeReceita" placeholder="Nome da receita..." style="padding:10px; border-radius:12px; border:2px solid #E0E0E0; margin-bottom:10px; width:100%;">
-  <button onclick="salvarReceita()" style="background:#43A047; color:white; padding:10px 15px; border:none; border-radius:15px; margin-bottom:20px; cursor:pointer;">Salvar Receita</button>
-  <ul id="receitasList"></ul>
-</div>
-</div>
-
-<script>
-// Ingredientes
-const ingredientes = [
-"Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
-"Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
-"Aroma de Três Leite","Aroma de Maisena","Aroma de Manteiga","Aroma de Maria","Aroma de Milho",
-"Aroma Alho","Caramelo","Aroma de Queijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio",
-"Cacau em pó","Cebola Natural Roxa","Caixa de Papelão","Emb. Saco Fd. 50x80","Chocolate em Pó",
-"Embalagem Transp. Lisa","Embalagem folhada Cebola","Embalagem folhada Alho","Embalagem Folhada Manteiga",
-"Milho Inatura","Farelo","Fubá de milho","Embalagem Milho","Ezimas","Embalagem 8 Grãos",
-"Embalagem Água e Sal","Embalagem Integral","Emb. Rainha Maisena","Emb. Rainha Leite","Emb. Rainha Cracker",
-"Emb. Rainha Rosca Leite","Emb. Rainha Rosca Chocolate","Emb. Rainha Rosca Coco","Emb. Rainha Manteiga",
-"Emb. Rainha Alho","Emb. Rainha Cebola","Farinha de Trigo Fama Panificação","Farinha de Trigo Panete Comum",
-"Farinha de Trigo Evita 2","Fécula de Mandioca","Fermento Instantâneo","Gordura Agropalma","Lecetina de Soja",
-"Manteiga Itacolomir","Margarina Folhada Rica","Margarina puro sabor","Margarina","Mel Caseiro",
-"Metabisulfito","Óleo de Soja","Milho Gelatinizado","Gordura Líquida Vegetal","Paulialfa","Paulitase",
-"Paulivita","Pirofosfato","Sal Micronizado","Sal Refinado","Soro de Leite","Unimelo","Etiquetas Conchita",
-"Embalagem de Caixa p/ Folhada","Óleo Pronto Cebola","Filme Rezinite","Fita Sela Caixa","Gelatina de Milho",
-"Embalagem Flocão","Embalagem Dallato Leite","Embalagem Dallato Coco","Embalagem Dallato Chocolate",
-"Aroma de Limão","Farofa","B. de Amônio","Farinha de Trigo Sc","Sal","Margarina M. Ouro","Amido de Milho",
-"Gordura Hid.","Tempero Cebola","Tempero Mant.","Tempero Alho","Esponja","Fermento","Paulivita",
-"Açúcar"
-].sort();
-
-// Unidades
-const unidades = [
-  { label: "Unidade", value: "un" },
-  { label: "Quilo (kg)", value: "kg" },
-  { label: "Grama (g)", value: "g" },
-  { label: "Litro (L)", value: "L" },
-  { label: "Mililitro (ml)", value: "ml" }
-];
-
-const listaUL = document.getElementById("listaItens");
-const cardsContainer = document.getElementById("cardsContainer");
-const precosTabela = document.getElementById("precosTabela");
-const receitasList = document.getElementById("receitasList");
-let itensAdicionados = {};
-let precosUnitarios = JSON.parse(localStorage.getItem("precosUnitarios") || "{}");
-let receitasSalvas = JSON.parse(localStorage.getItem("receitasSalvas") || "{}");
-
-// === Funções Tabs ===
-document.querySelectorAll(".tab").forEach(tab=>{
-  tab.addEventListener("click",()=>{
-    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(tc=>tc.classList.remove("active"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.tab).classList.add("active");
-  });
-});
-
-// === Lista de Ingredientes ===
-function mostrarLista(itens){
-  listaUL.innerHTML = "";
-  itens.forEach(item=>{
-    if(itensAdicionados[item]) return;
-    const li = document.createElement("li");
-    li.textContent = item;
-    li.onclick = ()=>adicionarItem(item);
-    listaUL.appendChild(li);
-  });
-}
-
-mostrarLista(ingredientes);
-
-function filtrarLista(){
-  const txt = document.getElementById("busca").value.toLowerCase();
-  mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
-}
-
-// === Adicionar Item ===
-function adicionarItem(nome){
-  if(itensAdicionados[nome]) return;
-  itensAdicionados[nome]=true;
-
-  const precoUnit = precosUnitarios[nome] || 0;
-
-  const card = document.createElement("div");
-  card.className="card-item";
-  card.dataset.nome=nome;
-
-  card.innerHTML=`
-    <div class="card-header">${nome}</div>
-    <div class="input-group">
-      <input type="number" placeholder="Custo" step="0.01" value="${precoUnit}" oninput="calcular()">
-      <input type="number" placeholder="Qtd" step="0.001" oninput="calcular()">
-      <select onchange="calcular()">
-        ${unidades.map(u=>`<option value="${u.value}">${u.label}</option>`).join("")}
-      </select>
-      <div class="custo">R$ 0.00</div>
-      <button onclick="removerItem(this)">Remover</button>
-    </div>
-  `;
-  cardsContainer.appendChild(card);
-  document.getElementById("busca").value="";
-  mostrarLista(ingredientes);
-}
-
-// === Calcular Totais ===
-function calcular(){
-  let total=0;
-  document.querySelectorAll(".card-item").forEach(card=>{
-    const inputs=card.querySelectorAll("input[type=number]");
-    const custo=parseFloat(inputs[0].value)||0;
-    const qtd=parseFloat(inputs[1].value)||0;
-    const subtotal=custo*qtd;
-    card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
-    total+=subtotal;
-  });
-  document.getElementById("total").textContent=total.toFixed(2);
-}
-
-// === Remover Item ===
-function removerItem(botao){
-  const card=botao.closest(".card-item");
-  delete itensAdicionados[card.dataset.nome];
-  card.remove();
-  calcular();
-  mostrarLista(ingredientes);
-}
-
-// === Preços Unitários ===
-function mostrarPrecos(){
-  precosTabela.innerHTML="";
-  ingredientes.forEach(item=>{
-    const tr = document.createElement("tr");
-    const preco = precosUnitarios[item] || 0;
-    tr.innerHTML=`<td>${item}</td>
-      <td><input type="number" step="0.01" value="${preco}" onchange="atualizarPreco('${item}',this.value)"></td>`;
-    precosTabela.appendChild(tr);
-  });
-}
-
-function atualizarPreco(item, valor){
-  precosUnitarios[item] = parseFloat(valor)||0;
-  localStorage.setItem("precosUnitarios", JSON.stringify(precosUnitarios));
-  // Atualiza também nos cards já adicionados
-  document.querySelectorAll(".card-item").forEach(card=>{
-    if(card.dataset.nome===item){
-      const inputCusto = card.querySelector("input[type=number]");
-      inputCusto.value=precosUnitarios[item];
-      calcular();
-    }
-  });
-}
-
-mostrarPrecos();
-
-// === Receitas ===
-function salvarReceita(){
-  const nome = document.getElementById("nomeReceita").value.trim();
-  if(!nome){ alert("Digite o nome da receita!"); return; }
-
-  const itens = [];
-  document.querySelectorAll(".card-item").forEach(card=>{
-    const inputs = card.querySelectorAll("input[type=number]");
-    const select = card.querySelector("select");
-    itens.push({
-      nome: card.dataset.nome,
-      custo: parseFloat(inputs[0].value)||0,
-      qtd: parseFloat(inputs[1].value)||0,
-      unidade: select.value
-    });
-  });
-
-  receitasSalvas[nome]=itens;
-  localStorage.setItem("receitasSalvas", JSON.stringify(receitasSalvas));
-  document.getElementById("nomeReceita").value="";
-  carregarReceitas();
-  alert("Receita salva com sucesso!");
-}
-
-function carregarReceitas(){
-  receitasList.innerHTML="";
+<!-- Scripts -->
+<script src="ingredientes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
