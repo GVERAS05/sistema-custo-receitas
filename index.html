@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Calculadora de Custos Corporativa</title>
+<title>Calculadora de Custos Premium</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* ===== Corpo ===== */
 body {
   margin: 0;
-  padding: 20px;
+  padding: 0;
   font-family: 'Roboto', sans-serif;
   background: #FAF9F6;
   color: #212121;
@@ -16,29 +16,45 @@ body {
 
 /* ===== Container ===== */
 .container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 /* ===== Título ===== */
 h1 {
   text-align: center;
   color: #1E88E5;
-  font-size: 38px;
-  margin-bottom: 30px;
+  font-size: 40px;
+  margin-bottom: 25px;
   letter-spacing: 0.5px;
 }
 
 /* ===== Barra de pesquisa ===== */
-.input-lupa {
+.search-container {
   position: relative;
-  width: 100%;
   margin-bottom: 30px;
 }
 
-.input-lupa img {
+.search-container input {
+  width: 100%;
+  padding: 14px 50px 14px 20px;
+  font-size: 18px;
+  border-radius: 25px;
+  border: 2px solid #E0E0E0;
+  background: #FCFCFC;
+  transition: all 0.3s;
+}
+
+.search-container input:focus {
+  border-color: #1E88E5;
+  box-shadow: 0 0 15px rgba(30,136,229,0.2);
+  outline: none;
+}
+
+.search-container img {
   position: absolute;
-  left: 12px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   width: 24px;
@@ -46,40 +62,22 @@ h1 {
   opacity: 0.7;
 }
 
-.input-lupa input {
-  width: 100%;
-  padding: 12px 12px 12px 44px;
-  font-size: 16px;
-  border: 2px solid #E0E0E0;
-  border-radius: 18px;
-  background: #FCFCFC;
-  color: #212121;
-  transition: border 0.3s, box-shadow 0.3s;
-}
-
-.input-lupa input:focus {
-  border-color: #1E88E5;
-  box-shadow: 0 0 12px rgba(30,136,229,0.25);
-  outline: none;
-}
-
-/* ===== Lista dropdown ===== */
+/* ===== Dropdown lista ===== */
 #listaItens {
   border: 2px solid #E0E0E0;
-  border-radius: 18px;
+  border-radius: 25px;
   max-height: 220px;
   overflow-y: auto;
   background: #FCFCFC;
   padding: 0;
-  margin: 0 0 25px 0;
+  margin: 0 0 30px 0;
   position: relative;
   z-index: 10;
 }
 
 #listaItens li {
   list-style: none;
-  padding: 12px 18px;
-  font-size: 16px;
+  padding: 12px 20px;
   cursor: pointer;
   border-bottom: 1px solid #BDBDBD;
   transition: background 0.2s, color 0.2s;
@@ -87,92 +85,89 @@ h1 {
 
 #listaItens li:hover {
   background: #1E88E5;
-  color: #fff;
+  color: white;
   font-weight: 600;
 }
 
 /* ===== Cards ===== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
 .card-item {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
   background: #FCFCFC;
-  border-radius: 18px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   padding: 20px;
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
   opacity: 0;
   transform: translateY(-15px);
   animation: fadeIn 0.4s forwards;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: all 0.3s ease;
 }
 
 .card-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
 }
 
-.card-item .info {
-  flex: 2;
+.card-item .card-header {
+  font-weight: 600;
   font-size: 18px;
-  font-weight: 500;
+  margin-bottom: 12px;
   color: #333;
-  margin-bottom: 8px;
 }
 
 .card-item .input-group {
   display: flex;
-  flex: 3;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   align-items: center;
 }
 
-/* Inputs e selects */
 .card-item input[type=number], .card-item select {
-  font-size: 16px;
-  padding: 8px 10px;
+  padding: 10px;
   border-radius: 12px;
   border: 2px solid #E0E0E0;
   background: #FAF9F6;
-  color: #212121;
+  font-size: 16px;
+  width: 100px;
+  transition: all 0.3s;
   text-align: center;
-  width: 110px;
-  transition: border 0.3s, box-shadow 0.3s, transform 0.2s;
 }
 
 .card-item input[type=number]:focus, .card-item select:focus {
   border-color: #1E88E5;
   box-shadow: 0 0 12px rgba(30,136,229,0.25);
   outline: none;
-  transform: scale(1.02);
+}
+
+.card-item .custo {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  min-width: 90px;
 }
 
 /* Botão remover */
 .card-item button {
   background: #E53935;
-  color: #FFFFFF;
+  color: white;
   border: none;
-  padding: 10px 18px;
   border-radius: 15px;
+  padding: 10px;
   font-weight: 600;
-  font-size: 16px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s, box-shadow 0.3s;
+  transition: all 0.2s;
 }
 
 .card-item button:hover {
   background: #C62828;
   transform: scale(1.05);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-}
-
-/* Subtotal */
-.card-item .custo {
-  font-weight: 600;
-  font-size: 16px;
-  color: #333;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
 }
 
 /* ===== Total ===== */
@@ -181,11 +176,11 @@ h1 {
   font-size: 28px;
   font-weight: 700;
   color: #1E88E5;
-  margin-top: 30px;
+  margin-top: 40px;
   background: #FCFCFC;
   padding: 14px 20px;
-  border-radius: 18px;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
 /* ===== Animação ===== */
@@ -197,34 +192,31 @@ h1 {
 }
 
 /* ===== Responsivo ===== */
-@media(max-width: 700px){
-  .card-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .card-item .input-group {
-    flex-wrap: wrap;
+@media(max-width: 750px){
+  .cards-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>Calculadora de Custos Corporativa</h1>
+<h1>Calculadora de Custos Premium</h1>
 
-<div class="input-lupa">
-  <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
+<div class="search-container">
   <input type="text" id="busca" placeholder="Digite para buscar..." onkeyup="filtrarLista()">
+  <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
 </div>
+
 <ul id="listaItens"></ul>
 
-<div id="cardsContainer"></div>
+<div class="cards-grid" id="cardsContainer"></div>
 
 <p class="total">Custo total: R$ <span id="total">0.00</span></p>
 </div>
 
 <script>
-// Lista completa de ingredientes (todos os itens que você enviou)
+// Lista completa de ingredientes
 const ingredientes = [
 "Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
 "Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
@@ -259,69 +251,64 @@ const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
 let itensAdicionados = {};
 
-// Mostrar lista
-function mostrarLista(itens) {
+function mostrarLista(itens){
   listaUL.innerHTML = "";
-  itens.forEach(item => {
+  itens.forEach(item=>{
     if(itensAdicionados[item]) return;
     const li = document.createElement("li");
     li.textContent = item;
-    li.onclick = () => adicionarItem(item);
+    li.onclick = ()=>adicionarItem(item);
     listaUL.appendChild(li);
   });
 }
 
 mostrarLista(ingredientes);
 
-// Filtrar
-function filtrarLista() {
+function filtrarLista(){
   const txt = document.getElementById("busca").value.toLowerCase();
-  mostrarLista(ingredientes.filter(i => i.toLowerCase().includes(txt)));
+  mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
 }
 
-// Adicionar item
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
-  itensAdicionados[nome] = true;
+  itensAdicionados[nome]=true;
 
   const card = document.createElement("div");
-  card.className = "card-item";
-  card.dataset.nome = nome;
+  card.className="card-item";
+  card.dataset.nome=nome;
 
-  card.innerHTML = `
-    <div class="info">${nome}</div>
+  card.innerHTML=`
+    <div class="card-header">${nome}</div>
     <div class="input-group">
       <input type="number" placeholder="Custo" step="0.01" oninput="calcular()">
       <input type="number" placeholder="Qtd" step="0.001" oninput="calcular()">
       <select onchange="calcular()">
-        ${unidades.map(u => `<option value="${u.value}">${u.label}</option>`).join("")}
+        ${unidades.map(u=>`<option value="${u.value}">${u.label}</option>`).join("")}
       </select>
       <div class="custo">R$ 0.00</div>
       <button onclick="removerItem(this)">Remover</button>
     </div>
   `;
   cardsContainer.appendChild(card);
-  document.getElementById("busca").value = "";
+  document.getElementById("busca").value="";
   mostrarLista(ingredientes);
 }
 
-// Calcular total
 function calcular(){
-  let total = 0;
-  document.querySelectorAll(".card-item").forEach(card => {
-    const inputs = card.querySelectorAll("input[type=number]");
-    const custo = parseFloat(inputs[0].value) || 0;
-    const qtd = parseFloat(inputs[1].value) || 0;
-    const subtotal = custo * qtd;
-    card.querySelector(".custo").textContent = "R$ " + subtotal.toFixed(2);
-    total += subtotal;
+  let total=0;
+  document.querySelectorAll(".card-item").forEach(card=>{
+    const inputs=card.querySelectorAll("input[type=number]");
+    const custo=parseFloat(inputs[0].value)||0;
+    const qtd=parseFloat(inputs[1].value)||0;
+    const subtotal=custo*qtd;
+    card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
+    total+=subtotal;
   });
-  document.getElementById("total").textContent = total.toFixed(2);
+  document.getElementById("total").textContent=total.toFixed(2);
 }
 
-// Remover item
 function removerItem(botao){
-  const card = botao.closest(".card-item");
+  const card=botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
   card.remove();
   calcular();
