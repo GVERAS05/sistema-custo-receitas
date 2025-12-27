@@ -2,301 +2,359 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Custos de Receita</title>
+<title>Calculadora de Custos Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  /* ===== Geral ===== */
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #FAF9F6;
-    color: #212121;
-    margin: 0;
-    padding: 0;
-  }
+/* ===== Corpo ===== */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #FAF9F6;
+  color: #212121;
+}
 
+/* ===== Container ===== */
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 25px 20px;
+}
+
+/* ===== Cabeçalho ===== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 35px;
+}
+
+header h1 {
+  font-size: 42px;
+  color: #1E88E5;
+  letter-spacing: 0.5px;
+}
+
+header .search-container {
+  position: relative;
+  width: 300px;
+}
+
+header .search-container input {
+  width: 100%;
+  padding: 12px 45px 12px 18px;
+  border-radius: 25px;
+  border: 2px solid #E0E0E0;
+  font-size: 16px;
+  transition: all 0.3s;
+  background: #FCFCFC;
+}
+
+header .search-container input:focus {
+  border-color: #1E88E5;
+  box-shadow: 0 0 15px rgba(30,136,229,0.2);
+  outline: none;
+}
+
+header .search-container img {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  opacity: 0.7;
+}
+
+/* ===== Dropdown lista ===== */
+#listaItens {
+  border: 2px solid #E0E0E0;
+  border-radius: 25px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #FCFCFC;
+  padding: 0;
+  margin: 0 0 30px 0;
+  position: relative;
+  z-index: 10;
+}
+
+#listaItens li {
+  list-style: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 1px solid #BDBDBD;
+  transition: background 0.2s, color 0.2s;
+}
+
+#listaItens li:hover {
+  background: #1E88E5;
+  color: white;
+  font-weight: 600;
+}
+
+/* ===== Grid de cards ===== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* ===== Card individual ===== */
+.card-item {
+  background: #FCFCFC;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeIn 0.4s forwards;
+  transition: all 0.3s ease;
+}
+
+.card-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+.card-item .card-header {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.card-item .input-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-item input[type=number], .card-item select {
+  padding: 10px;
+  border-radius: 12px;
+  border: 2px solid #E0E0E0;
+  background: #FAF9F6;
+  font-size: 16px;
+  width: 100px;
+  transition: all 0.3s;
+  text-align: center;
+}
+
+.card-item input[type=number]:focus, .card-item select:focus {
+  border-color: #1E88E5;
+  box-shadow: 0 0 12px rgba(30,136,229,0.25);
+  outline: none;
+}
+
+.card-item .custo {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  min-width: 90px;
+  text-align: right;
+}
+
+.card-item button {
+  background: #E53935;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  padding: 10px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card-item button:hover {
+  background: #C62828;
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* ===== Total ===== */
+.total {
+  text-align: right;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1E88E5;
+  margin-top: 40px;
+  background: #FCFCFC;
+  padding: 14px 20px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+/* ===== Animações ===== */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Responsivo ===== */
+@media(max-width: 750px){
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
   header {
-    background: #1E88E5;
-    color: #fff;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 1rem;
-  }
-
-  /* ===== Busca ===== */
-  .busca {
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-  }
-  .busca input {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px 0 0 8px;
-    font-size: 1rem;
-  }
-  .busca img {
-    width: 32px;
-    height: 32px;
-    background: #E0E0E0;
-    padding: 4px;
-    border-radius: 0 8px 8px 0;
-    cursor: pointer;
-  }
-
-  /* ===== Lista de ingredientes ===== */
-  #lista div {
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid #BDBDBD;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  #lista div:hover {
-    background: #E0E0E0;
-  }
-
-  /* ===== Cards ===== */
-  .card-item {
-    background: #FCFCFC;
-    border: 1px solid #E0E0E0;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    align-items: stretch;
+    gap: 20px;
   }
-  .card-item:hover {
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+  header .search-container {
+    width: 100%;
   }
-  .card-header {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem;
-  }
-  .input-group {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .input-group input, .input-group select {
-    padding: 0.5rem;
-    border: 1px solid #E0E0E0;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    flex: 1;
-  }
-  .input-group .custo {
-    min-width: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1rem;
-    color: #1E88E5;
-  }
-  .input-group button {
-    background: #E53935;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .input-group button:hover {
-    background: #B71C1C;
-  }
-
-  /* ===== Total ===== */
-  #total-container {
-    text-align: right;
-    font-size: 1.25rem;
-    font-weight: bold;
-    margin-top: 1rem;
-  }
+}
 </style>
 </head>
 <body>
-
+<div class="container">
 <header>
-  Sistema de Custos de Receita
+<h1>Calculadora de Custos Premium</h1>
+<div class="search-container">
+  <input type="text" id="busca" placeholder="Pesquisar ingrediente..." onkeyup="filtrarLista()">
+  <img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png" alt="lupa">
+</div>
 </header>
 
-<div class="container">
-  <div class="busca">
-    <input type="text" id="busca" placeholder="Pesquisar ingrediente...">
-    <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Lupa">
-  </div>
+<ul id="listaItens"></ul>
 
-  <div id="lista"></div>
-  <div id="cardsContainer"></div>
-  <div id="total-container">
-    Total: R$ <span id="total">0.00</span>
-  </div>
+<div class="cards-grid" id="cardsContainer"></div>
+
+<p class="total">Custo total: R$ <span id="total">0.00</span></p>
 </div>
 
 <script>
-// ============================
-// Ingredientes e unidades
-// ============================
+// Lista completa de ingredientes
 const ingredientes = [
-"Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho de Natural",
-"Amido de milho","Aroma de Baunilia","Aroma de Cebola","Aroma de Chocolate",
-"Aroma de Leite Condensado","Aroma de Coco","Aroma de Três Leite","Aroma de Maisena",
-"Aroma de Manteiga","Aroma de Maria","Aroma de Milho","Aroma Alho","Caramelo",
-"Aroma de Quijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio","Cacau em pó",
-"Cebola Natural Roxa","Caixa de Papelão","Emb. Saco Fd. 50x80","Chocolate em Pó",
-"Embalagem Transp. Lisa","Embalagem folhada Cebola","Embalagem folhada Alho",
-"Embalagem Folhada Manteiga","Milho Inatura","Farelo","Fubá de milho","Embalagem Milho",
-"Ezimas","Embalagem 8 Grãos","Embalagem Água e Sal","Embalagem Integral","Emb. Rainha Maisena",
-"Emb. Rainha Leite","Emb. Rainha Cracker","Emb. Rainha Rosca Leite","Emb. Rainha Rosca Chocolate",
-"Emb. Rainha Rosca Coco","Emb. Rainha Manteiga","Emb. Rainha Alho","Emb. Rainha Cebola",
-"Farinha de Trigo Fama Panificação","Farinha de Trigo Panete Comum","Farinha de Trigo Evita 2",
-"Fécula de Mandioca","Fermento Instantãneo","Gordura Agropalma","Lecetina de Soja Tb.",
-"Manteiga Itacolomir","Margarina Folhada Rica","Margarina puro sabor bd.","Margarina","Mel Caseiro",
-"Metabisulfito","Óleo de Soja","Milho Gelatinizado","Gordura Liquida Vegetal","Paulialfa",
-"Paulitase","Paulivita","Pirofosfato","Sal Micronizado","Sal Refinado","Soro de Leite",
-"Unimelo","etiquetas conchita","Embalagem de Caixa p/ Folhada","Óleo Pronto Cebola",
-"Filme Rezinite","Fita Sela Caixa","Gelatina de Milho","Embalagem Flocão","Embalagem Dallato Leite",
-"Embalagem Dallato Coco","Embalagem Dallato Chocolate","Aroma de Limão","Farofa","B. de Amonio",
-"Farinha de Trigo Sc","Sal Kg.","Margarina M. Ouro","Amido de Milho","Gordura Hid.",
-"Tempero Cebola","Óleo de Soja","Cebola Natural","Tempero Mant.","Mant. Itacolomir","Tempero Alho",
-"Esponja","Fermento","Paulivita","Açucar"
-];
+"Ácido Cítrico","Açúcar Refinado","Açúcar Sc.","Ajinomoto","Alho Natural","Amido de milho",
+"Aroma de Baunilha","Aroma de Cebola","Aroma de Chocolate","Aroma de Leite Condensado","Aroma de Coco",
+"Aroma de Três Leite","Aroma de Maisena","Aroma de Manteiga","Aroma de Maria","Aroma de Milho",
+"Aroma Alho","Caramelo","Aroma de Queijo Parmesão","Bicarbonato de Amônio","Bicarbonato de Sódio",
+"Cacau em pó","Cebola Natural Roxa","Caixa de Papelão","Emb. Saco Fd. 50x80","Chocolate em Pó",
+"Embalagem Transp. Lisa","Embalagem folhada Cebola","Embalagem folhada Alho","Embalagem Folhada Manteiga",
+"Milho Inatura","Farelo","Fubá de milho","Embalagem Milho","Ezimas","Embalagem 8 Grãos",
+"Embalagem Água e Sal","Embalagem Integral","Emb. Rainha Maisena","Emb. Rainha Leite","Emb. Rainha Cracker",
+"Emb. Rainha Rosca Leite","Emb. Rainha Rosca Chocolate","Emb. Rainha Rosca Coco","Emb. Rainha Manteiga",
+"Emb. Rainha Alho","Emb. Rainha Cebola","Farinha de Trigo Fama Panificação","Farinha de Trigo Panete Comum",
+"Farinha de Trigo Evita 2","Fécula de Mandioca","Fermento Instantâneo","Gordura Agropalma","Lecetina de Soja",
+"Manteiga Itacolomir","Margarina Folhada Rica","Margarina puro sabor","Margarina","Mel Caseiro",
+"Metabisulfito","Óleo de Soja","Milho Gelatinizado","Gordura Líquida Vegetal","Paulialfa","Paulitase",
+"Paulivita","Pirofosfato","Sal Micronizado","Sal Refinado","Soro de Leite","Unimelo","Etiquetas Conchita",
+"Embalagem de Caixa p/ Folhada","Óleo Pronto Cebola","Filme Rezinite","Fita Sela Caixa","Gelatina de Milho",
+"Embalagem Flocão","Embalagem Dallato Leite","Embalagem Dallato Coco","Embalagem Dallato Chocolate",
+"Aroma de Limão","Farofa","B. de Amônio","Farinha de Trigo Sc","Sal","Margarina M. Ouro","Amido de Milho",
+"Gordura Hid.","Tempero Cebola","Tempero Mant.","Tempero Alho","Esponja","Fermento","Paulivita",
+"Açúcar"
+].sort();
 
 const unidades = [
-  {label:"Kg", value:"kg"},
-  {label:"g", value:"g"},
-  {label:"L", value:"L"},
-  {label:"mL", value:"mL"},
-  {label:"unidade", value:"unidade"}
+  { label: "Unidade", value: "un" },
+  { label: "Quilo (kg)", value: "kg" },
+  { label: "Grama (g)", value: "g" },
+  { label: "Litro (L)", value: "L" },
+  { label: "Mililitro (ml)", value: "ml" }
 ];
 
-// ============================
-// Variáveis
-// ============================
-let itensAdicionados = {};
+const listaUL = document.getElementById("listaItens");
 const cardsContainer = document.getElementById("cardsContainer");
-const buscaInput = document.getElementById("busca");
-const listaDiv = document.getElementById("lista");
+let itensAdicionados = JSON.parse(localStorage.getItem("itensAdicionados")) || {};
 
-// ============================
-// LocalStorage histórico de preços
-// ============================
-function salvarHistorico(nome, preco){
-  let historico = JSON.parse(localStorage.getItem("historicoPrecos")) || {};
-  historico[nome] = preco;
-  localStorage.setItem("historicoPrecos", JSON.stringify(historico));
-}
-function pegarHistorico(nome){
-  let historico = JSON.parse(localStorage.getItem("historicoPrecos")) || {};
-  return historico[nome] || "";
+// Mostrar lista filtrada
+function mostrarLista(itens){
+  listaUL.innerHTML = "";
+  itens.forEach(item=>{
+    if(itensAdicionados[item]) return;
+    const li = document.createElement("li");
+    li.textContent = item;
+    li.onclick = ()=>adicionarItem(item);
+    listaUL.appendChild(li);
+  });
 }
 
-// ============================
+// Filtrar lista
+function filtrarLista(){
+  const txt = document.getElementById("busca").value.toLowerCase();
+  mostrarLista(ingredientes.filter(i=>i.toLowerCase().includes(txt)));
+}
+
 // Adicionar item
-// ============================
 function adicionarItem(nome){
   if(itensAdicionados[nome]) return;
-  itensAdicionados[nome]=true;
+  itensAdicionados[nome] = {
+    custo: 0,
+    qtd: 0,
+    unidade: "un"
+  };
+  localStorage.setItem("itensAdicionados", JSON.stringify(itensAdicionados));
+  criarCard(nome);
+  document.getElementById("busca").value="";
+  mostrarLista(ingredientes);
+  calcular();
+}
 
+// Criar card
+function criarCard(nome){
+  const data = itensAdicionados[nome];
   const card = document.createElement("div");
   card.className="card-item";
-  card.dataset.nome = nome;
-
-  const precoHistorico = pegarHistorico(nome);
-
-  card.innerHTML = `
+  card.dataset.nome=nome;
+  card.innerHTML=`
     <div class="card-header">${nome}</div>
     <div class="input-group">
-      <input type="number" placeholder="Custo" step="0.01" value="${precoHistorico}" oninput="calcularEAtualizarHistorico(this,'${nome}')">
-      <input type="number" placeholder="Qtd" step="0.001" oninput="calcular()">
-      <select onchange="calcular()">
-        ${unidades.map(u=>`<option value="${u.value}">${u.label}</option>`).join("")}
+      <input type="number" placeholder="Custo" step="0.01" value="${data.custo}" onchange="atualizarItem('${nome}','custo',this.value)">
+      <input type="number" placeholder="Qtd" step="0.001" value="${data.qtd}" onchange="atualizarItem('${nome}','qtd',this.value)">
+      <select onchange="atualizarItem('${nome}','unidade',this.value)">
+        ${unidades.map(u=>`<option value="${u.value}" ${u.value===data.unidade?'selected':''}>${u.label}</option>`).join("")}
       </select>
       <div class="custo">R$ 0.00</div>
       <button onclick="removerItem(this)">Remover</button>
     </div>
   `;
   cardsContainer.appendChild(card);
-  buscaInput.value = "";
-  mostrarLista(ingredientes);
 }
 
-// ============================
-// Atualizar histórico
-// ============================
-function calcularEAtualizarHistorico(input, nome){
+// Atualizar item
+function atualizarItem(nome, campo, valor){
+  itensAdicionados[nome][campo] = parseFloat(valor) || valor;
+  localStorage.setItem("itensAdicionados", JSON.stringify(itensAdicionados));
   calcular();
-  salvarHistorico(nome, parseFloat(input.value)||0);
 }
 
-// ============================
-// Calcular subtotal e total
-// ============================
-function calcular(){
-  let total = 0;
-  document.querySelectorAll(".card-item").forEach(card=>{
-    const inputs = card.querySelectorAll("input[type=number]");
-    const custo = parseFloat(inputs[0].value) || 0;
-    const qtd = parseFloat(inputs[1].value) || 0;
-    const subtotal = custo * qtd;
-    card.querySelector(".custo").textContent = "R$ " + subtotal.toFixed(2);
-    total += subtotal;
-  });
-  document.getElementById("total").textContent = total.toFixed(2);
-}
-
-// ============================
 // Remover item
-// ============================
 function removerItem(botao){
   const card = botao.closest(".card-item");
   delete itensAdicionados[card.dataset.nome];
+  localStorage.setItem("itensAdicionados", JSON.stringify(itensAdicionados));
   card.remove();
   calcular();
   mostrarLista(ingredientes);
 }
 
-// ============================
-// Mostrar lista filtrada
-// ============================
-function mostrarLista(array){
-  listaDiv.innerHTML="";
-  array.forEach(item=>{
-    const div = document.createElement("div");
-    div.textContent=item;
-    div.style.cursor="pointer";
-    div.onclick=()=>adicionarItem(item);
-    listaDiv.appendChild(div);
+// Calcular total
+function calcular(){
+  let total=0;
+  document.querySelectorAll(".card-item").forEach(card=>{
+    const inputs = card.querySelectorAll("input[type=number]");
+    const custo = parseFloat(inputs[0].value) || 0;
+    const qtd = parseFloat(inputs[1].value) || 0;
+    const subtotal = custo*qtd;
+    card.querySelector(".custo").textContent="R$ "+subtotal.toFixed(2);
+    total+=subtotal;
   });
+  document.getElementById("total").textContent=total.toFixed(2);
 }
 
-// ============================
-// Pesquisa ingredientes
-// ============================
-buscaInput.addEventListener("input", e=>{
-  const val = e.target.value.toLowerCase();
-  const filtrados = ingredientes.filter(i=>i.toLowerCase().includes(val));
-  mostrarLista(filtrados);
-});
-
-// ============================
-// Inicial
-// ============================
+// Inicializar cards existentes do localStorage
+Object.keys(itensAdicionados).forEach(criarCard);
+calcular();
 mostrarLista(ingredientes);
 </script>
-
 </body>
 </html>
